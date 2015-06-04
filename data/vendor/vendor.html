@@ -1,0 +1,26 @@
+<html>
+<head>
+</head>
+<body ng-app="app">
+  <div ng-controller="VendorController" class="container">
+    <div ng-show="!vendor" class="alert alert-danger text-center" style="margin-top:20px">
+      {{error}}
+    </div>
+    <div ng-show="!!vendor">
+      <h1>{{vendor.name}}</h1>
+      <table class="table">
+        <tr ng-repeat="product in vendor.products">
+          <td>{{product.name}}</td>
+          <td>{{product.price}} {{vendor.currency}}</td>
+          <td><input type="number" min="0" ng-model="product.quantity" class="form-control"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td>{{total}} {{vendor.currency  | currency}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

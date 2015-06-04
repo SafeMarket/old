@@ -1,0 +1,15 @@
+{
+  "name": "trustless",
+  "version": "0.0.0",
+  "authors": [
+    "Aakil Fernandes <aakilfernandes@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.4.0",
+    "validate": "~0.7.1",
+    "bootstrap": "~3.3.4",
+    "abdmob/x2js": "~1.1.7"
+  }
+}

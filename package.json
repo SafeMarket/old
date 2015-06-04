@@ -1,0 +1,13 @@
+{
+  "name": "extension",
+  "title": "trustless",
+  "id": "jid1-646FXOj1BBAWAg",
+  "description": "a basic add-on",
+  "author": "",
+  "license": "MPL 2.0",
+  "version": "0.1",
+  "permissions": {
+  	"private-browsing": true
+  	,"cross-domain-content":["https://blockchain.info/","https://google.com"]
+  }
+}
