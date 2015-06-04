@@ -5,16 +5,14 @@ app.controller('VendorController',function($scope){
 
 	$scope.total = 0
 
-	self.port.on('show',function onShow(vendorText){
-		$scope.vendor = null
-		
+	self.port.on('show',function onShow(options){
+		console.log(options)
+		$scope.vendor = null		
 		try{
-			$scope.vendor = parseVendorText(vendorText)
+			$scope.vendor = parseVendorText(options.text)
 		}catch(err){
-			console.log(err)
 			$scope.error=err
 		}
-		
 		$scope.$apply()
 	})
 
@@ -34,7 +32,7 @@ app.controller('VendorController',function($scope){
 })
 
 validate.validators.isArray = function(value, options, key, attributes) {
-	return Array.isArray(value) ? null : 'is not an array'
+	return Array.isArray(value) ? null : key+' is not an array'
 };
 
 var vendorConstraints = {
