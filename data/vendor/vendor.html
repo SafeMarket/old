@@ -15,9 +15,10 @@
           <td><input type="number" min="0" ng-model="product.quantity" class="form-control"></td>
         </tr>
         <tr>
-          <td></td>
-          <td></td>
-          <td>{{total}} {{vendor.currency  | currency}}</td>
+          <td></td><td></td><td>{{totals.vendor_currency | number:2}} {{vendor.currency}}</td>
+        </tr>
+        <tr>
+          <td></td><td></td><td>{{totals.btc | number:6}} BTC</td>
         </tr>
       </table>
     </div>

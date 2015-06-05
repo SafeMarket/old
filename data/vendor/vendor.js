@@ -1,13 +1,20 @@
 
-app = angular.module('app',[])
+var app = angular.module('app',[])
+	,rates = {}
 
 app.controller('VendorController',function($scope){
 
-	$scope.total = 0
+	$scope.totals = {
+		vendor_currency:0
+		,my_currency:0
+		,btc:0
+	}
 
 	self.port.on('show',function onShow(options){
-		console.log(options)
-		$scope.vendor = null		
+		$scope.rates = rates = options.rates
+		
+		$scope.vendor = null
+
 		try{
 			$scope.vendor = parseVendorText(options.text)
 		}catch(err){
@@ -24,21 +31,31 @@ app.controller('VendorController',function($scope){
 			total += product.quantity * product.price
 		});
 
-		$scope.total = total
+		$scope.totals = {
+			vendor_currency:total
+			,btc:convert(total,{
+				from:$scope.vendor.currency
+				,to:'BTC'
+			})
+		}
 
 
 	},true)
 
 })
 
-validate.validators.isArray = function(value, options, key, attributes) {
+validate.validators.array = function(value, options, key, attributes) {
 	return Array.isArray(value) ? null : key+' is not an array'
+};
+
+validate.validators.currency = function(value, options, key, attributes) {
+	return rates[value] > 0 ? null : value+' is not a valid currency'
 };
 
 var vendorConstraints = {
 	name:{presence:true}
-	,currency:{presence:true,inclusion:['BTC','USD']}
-	,products:{presence:true,isArray:true}
+	,currency:{presence:true,currency:true}
+	,products:{presence:true,array:true}
 }
 
 function parseVendorText(vendorText){
@@ -66,4 +83,14 @@ function parseVendorText(vendorText){
 		throw vendorValidation[Object.keys(vendorValidation)[0]][0]
 
 	return vendor
+}
+
+function convert(amount,currencies){
+	console.log(currencies,rates)
+
+	if(!rates.hasOwnProperty(currencies.from) || !rates.hasOwnProperty(currencies.to))
+		throw 'Invalid currency'
+
+	amount_btc = amount/rates[currencies.from]
+	return amount_btc*rates[currencies.to]
 }
