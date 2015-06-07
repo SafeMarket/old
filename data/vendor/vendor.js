@@ -12,10 +12,11 @@ app.controller('VendorController',function($scope){
 
 	self.port.on('show',function onShow(options){
 		$scope.rates = rates = options.rates
+		$scope.preferences = options.preferences
 		$scope.vendor = null
 
 		try{
-			$scope.vendor = parseVendorXml(options.vendorXml)
+			$scope.vendor = getVendorFromXml(options.vendorXml)
 		}catch(err){
 			$scope.error=err
 		}
@@ -26,19 +27,11 @@ app.controller('VendorController',function($scope){
 	$scope.$watch('vendor.products',function(product){
 		if(!$scope.vendor) return
 
-		var total = 0;
-		$scope.vendor.products.forEach(function(product){
-			total += product.quantity * product.price
-		});
-
 		$scope.totals = {
-			vendor_currency:total
-			,btc:convert(total,{
-				from:$scope.vendor.currency
-				,to:'BTC'
-			})
+			vendor_currency:$scope.vendor.getTotal()
+			,btc:$scope.vendor.getTotal('BTC')
+			,my_currency:$scope.vendor.getTotal($scope.preferences.currency)
 		}
-
 
 	},true)
 
@@ -58,7 +51,7 @@ var vendorConstraints = {
 	,products:{presence:true,array:true}
 }
 
-function parseVendorXml(vendorXml){
+function getVendorFromXml(vendorXml){
 
 	var vendor = xml2json.parser(vendorXml).vendor
 
@@ -70,19 +63,39 @@ function parseVendorXml(vendorXml){
 	else
 		vendor.products = [vendor.product]
 
-	vendor.products.forEach(function(product){
-		product.quantity=0
-		product.price = parseFloat(product.price)
-	})
-
 	delete vendor.product
 
+	return new Vendor(vendor)
+}
+
+function Vendor(vendor){
 	var vendorValidation = validate(vendor,vendorConstraints)
 
 	if(vendorValidation)
 		throw vendorValidation[Object.keys(vendorValidation)[0]][0]
 
-	return vendor
+	angular.extend(this,vendor)
+
+	this.products.forEach(function(product){
+		product.quantity=0
+		product.price = parseFloat(product.price)
+	})
+}
+
+Vendor.prototype.getTotal = function(currency){
+	var total = 0
+
+	this.products.forEach(function(product){
+		total += (product.quantity*product.price)
+	})
+
+	if(!currency)
+		return total
+	else
+		return convert(total,{
+			from:this.currency
+			,to:currency
+		})
 }
 
 function convert(amount,currencies){
