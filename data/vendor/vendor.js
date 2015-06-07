@@ -32,8 +32,11 @@ app.controller('VendorController',function($scope){
 			,btc:$scope.vendor.getTotal('BTC')
 			,my_currency:$scope.vendor.getTotal($scope.preferences.currency)
 		}
-
 	},true)
+
+	$scope.checkout = function(){
+		console.log($scope.vendor.getReceipt())
+	}
 
 })
 
@@ -96,6 +99,39 @@ Vendor.prototype.getTotal = function(currency){
 			from:this.currency
 			,to:currency
 		})
+}
+
+Vendor.prototype.getReceipt = function(message){
+	return new Receipt(this,message)
+}
+
+function Receipt(vendor,message){
+	var indexMax = Math.pow(2,31)-1
+		,products = []
+
+	vendor.products.forEach(function(product){
+		if(product.quantity===0) return true
+		products.push({
+			id:product.id
+			,quantity:product.quantity
+		})
+	})
+
+	angular.extend(this,{
+		index: Math.random(0,indexMax)
+		,epoch: Math.round((new Date()).getTime() / 1000)
+		,products:products
+		,total:vendor.getTotal('BTC')
+		,message:message
+	})
+}
+
+Receipt.prototype.getEncrypted = function(){
+
+}
+
+Receipt.prototype.getXml = function(){
+	return '<receipt>'+this.getEncrypted()+'</receipt>'
 }
 
 function convert(amount,currencies){
