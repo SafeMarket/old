@@ -12,14 +12,14 @@ app.controller('VendorController',function($scope){
 
 	self.port.on('show',function onShow(options){
 		$scope.rates = rates = options.rates
-		
 		$scope.vendor = null
 
 		try{
-			$scope.vendor = parseVendorText(options.text)
+			$scope.vendor = parseVendorXml(options.vendorXml)
 		}catch(err){
 			$scope.error=err
 		}
+
 		$scope.$apply()
 	})
 
@@ -58,9 +58,9 @@ var vendorConstraints = {
 	,products:{presence:true,array:true}
 }
 
-function parseVendorText(vendorText){
-	var x2js = new X2JS()
-		,vendor = x2js.xml_str2json(vendorText).vendor
+function parseVendorXml(vendorXml){
+
+	var vendor = xml2json.parser(vendorXml).vendor
 
 	if(!vendor)
 		throw 'vendor text is not valid xml'
@@ -86,7 +86,6 @@ function parseVendorText(vendorText){
 }
 
 function convert(amount,currencies){
-	console.log(currencies,rates)
 
 	if(!rates.hasOwnProperty(currencies.from) || !rates.hasOwnProperty(currencies.to))
 		throw 'Invalid currency'
