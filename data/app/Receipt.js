@@ -21,7 +21,6 @@ angular.module('app').factory('Receipt',function(){
 		})
 
 		this.setAddress()
-		console.log(this.address)
 	}
 
 	Receipt.prototype.getData = function(){
@@ -35,18 +34,10 @@ angular.module('app').factory('Receipt',function(){
 	}
 
 	Receipt.prototype.setAddress = function(){
-		console.log('setAddress')
-		console.log(this.vendor.mpk)
 		var bip32 = new BIP32(this.vendor.mpk.trim())
-
-		console.log('a')
-		var paths = ['m',this.index,this.epoch]
-			console.log(paths)
-		var child = bip32.derive(paths.join('/'))
-		console.log('child')
-		var hash160 = child.eckey.pubKeyHash
-
-		console.log(hash160)
+			,paths = ['m',this.index,this.epoch]
+			,child = bip32.derive(paths.join('/'))
+			,hash160 = child.eckey.pubKeyHash
 
 		this.address =  (new Bitcoin.Address(hash160)).toString()
 	}
