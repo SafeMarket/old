@@ -7,12 +7,12 @@ angular.module('app').controller('VendorController',function($scope,$q,$timeout,
 	}
 
 	self.port.on('show',function onShow(options){
-		$scope.rates = rates = options.rates
 		$scope.preferences = options.preferences
 		$scope.vendor = null
 
 		try{
-			$scope.vendor = Vendor.fromXml(options.vendorXml)
+			$scope.vendor = Vendor.fromXml(options.vendorXml,options.rates)
+			console.log($scope.vendor)
 		}catch(err){
 			$scope.error=err
 		}
@@ -31,26 +31,8 @@ angular.module('app').controller('VendorController',function($scope,$q,$timeout,
 	},true)
 
 	$scope.checkout = function(){
-		this.vendor.getReceiptPromise($q,$scope.message).then(function(receipt){
-			$scope.receipt = receipt
-		})
-	}
-
-	$scope.update = function(){
-		$scope.receipt.getUpdatePromise().finally(function(){
-			$timeout(function(){
-				console.log($scope.receipt.blockchain.total_received)
-			})
-		})
+		self.port.emit('receipt',{vendor:$scope.vendor,message:$scope.message})
+		console.log('checkout')
 	}
 
 })
-
-function convert(amount,currencies){
-
-	if(!rates.hasOwnProperty(currencies.from) || !rates.hasOwnProperty(currencies.to))
-		throw 'Invalid currency'
-
-	amount_btc = amount/rates[currencies.from]
-	return amount_btc*rates[currencies.to]
-}

@@ -1,8 +1,6 @@
 angular.module('app').factory('Receipt',function(blockchain){
 
-	console.log(blockchain)
-
-	function Receipt(vendor,message){
+	function Receipt(vendor,buyer,message){
 		var indexMax = Math.pow(2,31)-1
 			,products = []
 
@@ -14,8 +12,15 @@ angular.module('app').factory('Receipt',function(blockchain){
 			})
 		})
 
+		console.log(15)
+		console.log(products)
+
+		console.log(18)
+		console.log(vendor.getTotal('BTC'))
+
 		angular.extend(this,{
 			vendor: vendor
+			,buyer: buyer
 			,index: 0//Math.random(0,10)
 			,epoch: 0//Math.round((new Date()).getTime() / 1000)
 			,products:products
@@ -23,6 +28,9 @@ angular.module('app').factory('Receipt',function(blockchain){
 			,message:message
 			,status:'unpaid'
 		})
+
+		console.log(29)
+		console.log(this)
 
 		this.setAddress()
 	}
@@ -34,14 +42,21 @@ angular.module('app').factory('Receipt',function(blockchain){
 			,products:this.products
 			,total:this.total
 			,message:this.message
+			,vendorName:this.vendor.name
+			,buyerName:this.buyer.name
+			,buyerAddress:this.buyer.address
 		}
 	}
 
 	Receipt.prototype.getUpdatePromise = function(){
 		var receipt = this
 		return blockchain.getAddressPromise(this.address).success(function(response){
-				receipt.blockchain = response
-				console.log(response)
+				
+				receipt.received = response.total_received / Math.pow(10,8)
+				receipt.balance = response.final_balance / Math.pow(10,8)
+
+				receipt.status = response.received >= receipt.total ? 'paid' : 'unpaid'
+
 			}).error(function(response){
 				console.log('error')
 			})

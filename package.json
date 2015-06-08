@@ -11,6 +11,17 @@
   	,"cross-domain-content":["https://blockchain.info"]
   },"preferences":[
   	{
+	    "type": "string",
+	    "name": "name",
+	    "value": "",
+	    "title": "Name"
+	},{
+	    "type": "string",
+	    "name": "address",
+	    "value": "",
+	    "title": "Refund Address"
+	},
+  	{
   		"name": "currency",
 	    "type": "menulist",
 	    "title": "Currency",
@@ -112,7 +123,7 @@
 	    "title": "PGP Public Key"
 	},{
 	    "type": "string",
-	    "name": "pgpPublic",
+	    "name": "pgpPrivate",
 	    "value": "",
 	    "title": "PGP Private Key"
 	}

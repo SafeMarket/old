@@ -15,7 +15,7 @@
           <td><input type="number" min="0" ng-model="product.quantity" class="form-control"></td>
         </tr>
         <tr>
-          <td></td><td></td><td>{{totals.vendor_currency | number:2}} {{vendor.currency}}</td>
+          <td></td><td></td><td>{{totals.vendor_currency | number:6}} {{vendor.currency}}</td>
         </tr>
         <tr>
           <td></td><td></td><td>{{totals.btc | number:6}} BTC</td>
@@ -47,12 +47,16 @@
           <td>{{receipt.status}}</td>
         </tr>
         <tr>
-          <td>Total Received</td>
-          <td>{{receipt.blockchain.total_received}}</td>
+          <td>Total</td>
+          <td>{{receipt.total | number:6}} BTC</td>
         </tr>
         <tr>
-          <td>Current Balance</td>
-          <td>{{receipt.blockchain.final_balance}}</td>
+          <td>Received</td>
+          <td>{{receipt.received | number:6}} BTC</td>
+        </tr>
+        <tr>
+          <td>Balance</td>
+          <td>{{receipt.balance | number:6}} BTC</td>
         </tr>
         <tr>
           <td></td>
