@@ -2,7 +2,8 @@
 var app = angular.module('app',[])
 	,rates = {}
 
-app.controller('VendorController',function($scope){
+
+app.controller('VendorController',function($scope,$q){
 
 	$scope.totals = {
 		vendor_currency:0
@@ -35,7 +36,9 @@ app.controller('VendorController',function($scope){
 	},true)
 
 	$scope.checkout = function(){
-		console.log($scope.vendor.getReceipt())
+		this.vendor.getReceiptPromise($q,$scope.message).then(function(receipt){
+			$scope.receipt = receipt
+		})
 	}
 
 })
@@ -50,6 +53,7 @@ validate.validators.currency = function(value, options, key, attributes) {
 
 var vendorConstraints = {
 	name:{presence:true}
+	,pgppublic64:{presence:true}
 	,currency:{presence:true,currency:true}
 	,products:{presence:true,array:true}
 }
@@ -83,6 +87,9 @@ function Vendor(vendor){
 		product.quantity=0
 		product.price = parseFloat(product.price)
 	})
+
+	this.pgppublic = atob(this.pgppublic64)
+	this.key = openpgp.key.readArmored(this.pgppublic)
 }
 
 Vendor.prototype.getTotal = function(currency){
@@ -101,8 +108,28 @@ Vendor.prototype.getTotal = function(currency){
 		})
 }
 
-Vendor.prototype.getReceipt = function(message){
-	return new Receipt(this,message)
+Vendor.prototype.getReceiptPromise = function($q,message){
+	var receipt = new Receipt(this,message)
+		,vendor = this
+
+	return $q(function(resolve,reject){
+
+		var message = JSON.stringify(receipt.getData())
+
+		openpgp.encryptMessage(
+			vendor.key.keys
+			,JSON.stringify(receipt.getData())
+		).then(function(pgpMessage){
+
+
+			angular.extend(receipt,{
+				pgpMessage:pgpMessage
+				,xml:'<receipt>'+btoa(pgpMessage)+'<receipt>'
+			})
+
+			resolve(receipt)
+		})
+	})
 }
 
 function Receipt(vendor,message){
@@ -118,20 +145,43 @@ function Receipt(vendor,message){
 	})
 
 	angular.extend(this,{
-		index: Math.random(0,indexMax)
+		vendor: vendor
+		,index: Math.random(0,indexMax)
 		,epoch: Math.round((new Date()).getTime() / 1000)
 		,products:products
 		,total:vendor.getTotal('BTC')
 		,message:message
 	})
+
+	this.setAddress()
+	console.log(this.address)
 }
 
-Receipt.prototype.getEncrypted = function(){
-
+Receipt.prototype.getData = function(){
+	return {
+		index:this.index
+		,epoch:this.epoch
+		,products:this.products
+		,total:this.total
+		,message:this.message
+	}
 }
 
-Receipt.prototype.getXml = function(){
-	return '<receipt>'+this.getEncrypted()+'</receipt>'
+Receipt.prototype.setAddress = function(){
+	console.log('setAddress')
+	console.log(this.vendor.mpk)
+	var bip32 = new BIP32(this.vendor.mpk.trim())
+
+	console.log('a')
+	var paths = ['m',this.index,this.epoch]
+		console.log(paths)
+	var child = bip32.derive(paths.join('/'))
+	console.log('child')
+	var hash160 = child.eckey.pubKeyHash
+
+	console.log(hash160)
+
+	this.address =  (new Bitcoin.Address(hash160)).toString()
 }
 
 function convert(amount,currencies){

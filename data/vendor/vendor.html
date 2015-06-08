@@ -8,7 +8,7 @@
     </div>
     <div ng-show="!!vendor">
       <h1>{{vendor.name}}</h1>
-      <table class="table">
+      <table class="table" style="">
         <tr ng-repeat="product in vendor.products">
           <td>{{product.name}}</td>
           <td>{{product.price}} {{vendor.currency}}</td>
@@ -37,10 +37,14 @@
     </div>
     <div ng-if="receipt">
       <h2>Receipt</h2>
-      <table>
+      <table class="table">
+        <tr>
+          <td>Address</td>
+          <td><code>{{receipt.address}}</pre></td>
+        </tr>
         <tr>
           <td>Xml</td>
-          <td><pre class="pre">receipt.getXml()</pre></td>
+          <td><pre class="pre" style="white-space: pre-wrap;">{{receipt.xml}}</pre></td>
         </tr>
       </table>
     </div>

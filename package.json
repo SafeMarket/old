@@ -104,6 +104,16 @@
 		    "label":"BTC"
 		  }
 		]
-  	}
+  	},{
+	    "type": "string",
+	    "name": "pgpPublic",
+	    "value": "",
+	    "title": "PGP Public Key"
+	},{
+	    "type": "string",
+	    "name": "pgpPublic",
+	    "value": "",
+	    "title": "PGP Private Key"
+	}
   ]
 }
