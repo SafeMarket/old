@@ -42,6 +42,22 @@
           <td>Address</td>
           <td><code>{{receipt.address}}</pre></td>
         </tr>
+         <tr>
+          <td>Status</td>
+          <td>{{receipt.status}}</td>
+        </tr>
+        <tr>
+          <td>Total Received</td>
+          <td>{{receipt.blockchain.total_received}}</td>
+        </tr>
+        <tr>
+          <td>Current Balance</td>
+          <td>{{receipt.blockchain.final_balance}}</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><button class="btn btn-primary" ng-click="update()">Update Status</button></td>
+        </tr>
         <tr>
           <td>Xml</td>
           <td><pre class="pre" style="white-space: pre-wrap;">{{receipt.xml}}</pre></td>

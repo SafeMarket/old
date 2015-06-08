@@ -1,4 +1,7 @@
-angular.module('app').factory('Receipt',function(){
+angular.module('app').factory('Receipt',function(blockchain){
+
+	console.log(blockchain)
+
 	function Receipt(vendor,message){
 		var indexMax = Math.pow(2,31)-1
 			,products = []
@@ -13,11 +16,12 @@ angular.module('app').factory('Receipt',function(){
 
 		angular.extend(this,{
 			vendor: vendor
-			,index: Math.random(0,indexMax)
-			,epoch: Math.round((new Date()).getTime() / 1000)
+			,index: 0//Math.random(0,10)
+			,epoch: 0//Math.round((new Date()).getTime() / 1000)
 			,products:products
 			,total:vendor.getTotal('BTC')
 			,message:message
+			,status:'unpaid'
 		})
 
 		this.setAddress()
@@ -31,6 +35,16 @@ angular.module('app').factory('Receipt',function(){
 			,total:this.total
 			,message:this.message
 		}
+	}
+
+	Receipt.prototype.getUpdatePromise = function(){
+		var receipt = this
+		return blockchain.getAddressPromise(this.address).success(function(response){
+				receipt.blockchain = response
+				console.log(response)
+			}).error(function(response){
+				console.log('error')
+			})
 	}
 
 	Receipt.prototype.setAddress = function(){

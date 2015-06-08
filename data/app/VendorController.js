@@ -1,4 +1,4 @@
-angular.module('app').controller('VendorController',function($scope,$q,Vendor){
+angular.module('app').controller('VendorController',function($scope,$q,$timeout,Vendor){
 
 	$scope.totals = {
 		vendor_currency:0
@@ -33,6 +33,14 @@ angular.module('app').controller('VendorController',function($scope,$q,Vendor){
 	$scope.checkout = function(){
 		this.vendor.getReceiptPromise($q,$scope.message).then(function(receipt){
 			$scope.receipt = receipt
+		})
+	}
+
+	$scope.update = function(){
+		$scope.receipt.getUpdatePromise().finally(function(){
+			$timeout(function(){
+				console.log($scope.receipt.blockchain.total_received)
+			})
 		})
 	}
 

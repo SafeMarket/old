@@ -8,6 +8,7 @@
   "version": "0.1",
   "permissions": {
   	"private-browsing": true
+  	,"cross-domain-content":["https://blockchain.info"]
   },"preferences":[
   	{
   		"name": "currency",
