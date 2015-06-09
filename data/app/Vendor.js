@@ -1,4 +1,4 @@
-angular.module('app').factory('Vendor',function($q,Receipt){
+app.factory('Vendor',function($q,Receipt,convert){
 
 
 	function Vendor(vendor,rates){

@@ -1,0 +1,37 @@
+<div ng-controller="SettingsController">
+	<h1>Settings</h1>
+	<form name="settingsForm" ng-submit="settingsForm.$valid && saveSettings()">
+	<table class="table">
+		<tr>
+			<td>Name</td>
+			<td>
+				<input type="text" name="name" class="form-control" required ng-model="settings.name">
+			</td>
+		</tr>
+		<tr>
+			<td>Master Private Key</td>
+			<td>
+				<input type="text" name="mk_private" class="form-control" required mk-private ng-model="settings.mk_private">
+			</td>
+		</tr>
+		<tr>
+			<td>PGP Public Key</td>
+			<td>
+				<textarea type="text" name="pgp_public" class="form-control" required pgp-public ng-model="settings.pgp_public"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>PGP Private Key</td>
+			<td>
+				<textarea type="text" name="pgp_private" class="form-control" required pgp-private ng-model="settings.pgp_private"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<button class="btn btn-primary">Save</button>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>

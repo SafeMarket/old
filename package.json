@@ -9,7 +9,5 @@
   "permissions": {
   	"private-browsing": true
   	,"cross-domain-content":["https://blockchain.info"]
-  },"preferences":[]
-  	}
-  ]
+  }  
 }

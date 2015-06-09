@@ -12,6 +12,8 @@
     "bootstrap": "~3.3.4",
     "eccjs": "jpillora/eccjs#~0.3.1",
     "openpgp": "~1.0.1",
-    "angular-websocket": "~1.0.13"
+    "angular-websocket": "~1.0.13",
+    "angular-bootstrap": "~0.13.0",
+    "angular-bootstrap-show-errors": "~2.3.0"
   }
 }
