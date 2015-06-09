@@ -1,0 +1,35 @@
+<html>
+<head>
+</head>
+<body ng-app="app">
+  <div ng-controller="ManifestController" class="container">
+    <form ng-submit="submit()">
+      <h1>Create a Manifest</h1>
+      <table class="table">
+        <tr>
+          <td>Shop Name</td><td><input class="form-control" ng-model="name" required></td>
+        </tr>
+      </table>
+      <h3>Products <button ng-click="products.push({})" class="btn btn-success btn-xs">+</button></h3>
+      <table class="table">
+        <tbody ng-repeat="product in products">
+          <tr>
+            <td>
+              <input ng-model="product.name" class="form-control" placeholder="Name" required>
+            </td>
+            <td>
+              <input ng-model="product.price" class="form-control"  placeholder="Price ({{preferences.currency}})" required>
+            </td>
+            <td><button ng-click="deleteProduct($index)" class="btn btn-danger">X</button></td>
+          </tr>
+        </tbody>
+        <tr>
+          <td></td>
+          <td><button class="btn btn-primary">Submit</button></td>
+        </tr>
+      </table>
+    </form>
+    <pre class="pre" style="white-space:pre-wrap;" ng-if="manifest">{{manifest}}</pre>
+  </div>
+</body>
+</html>

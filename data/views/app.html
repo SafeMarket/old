@@ -35,39 +35,6 @@
         </tr>
       </table>
     </div>
-    <div ng-if="receipt">
-      <h2>Receipt</h2>
-      <table class="table">
-        <tr>
-          <td>Address</td>
-          <td><code>{{receipt.address}}</pre></td>
-        </tr>
-         <tr>
-          <td>Status</td>
-          <td>{{receipt.status}}</td>
-        </tr>
-        <tr>
-          <td>Total</td>
-          <td>{{receipt.total | number:6}} BTC</td>
-        </tr>
-        <tr>
-          <td>Received</td>
-          <td>{{receipt.received | number:6}} BTC</td>
-        </tr>
-        <tr>
-          <td>Balance</td>
-          <td>{{receipt.balance | number:6}} BTC</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><button class="btn btn-primary" ng-click="update()">Update Status</button></td>
-        </tr>
-        <tr>
-          <td>Xml</td>
-          <td><pre class="pre" style="white-space: pre-wrap;">{{receipt.xml}}</pre></td>
-        </tr>
-      </table>
-    </div>
   </div>
 </body>
 </html>

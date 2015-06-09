@@ -4,7 +4,7 @@
 <body ng-app="app">
   <div ng-controller="ReceiptController" class="container">
     <div ng-if="receipt">
-      <h2>Receipt: {{receipt.buyer.name}} -> {{receipt.vendor.name}}</h2>
+      <h2>Receipt: {{receipt.buyerName}} -> {{receipt.vendorName}}</h2>
       <table class="table">
         <tr>
           <td>Address</td>
@@ -31,8 +31,7 @@
           <td><button class="btn btn-primary" ng-click="update()">Update Status</button></td>
         </tr>
         <tr>
-          <td>Xml</td>
-          <td><pre class="pre" style="white-space: pre-wrap;">{{receipt.xml}}</pre></td>
+          <td colspan="2"><pre class="pre" style="white-space: pre-wrap;">{{receipt.xml}}</pre></td>
         </tr>
       </table>
     </div>

@@ -14,10 +14,10 @@ angular.module('app').factory('Vendor',function($q,Receipt){
 
 		var vendorValidation = validate(vendor,constraints)
 
-		console.log(vendorValidation)
-
 		if(vendorValidation)
 			throw vendorValidation[Object.keys(vendorValidation)[0]][0]
+
+		this.manifest = '<manifest>'+btoa(JSON.stringify(vendor))+'</manifest>'
 
 		angular.extend(this,vendor)
 
@@ -26,11 +26,8 @@ angular.module('app').factory('Vendor',function($q,Receipt){
 			product.price = parseFloat(product.price)
 		})
 
-		console.log('29')
-
 		this.key = openpgp.key.readArmored(this.pgpPublic)
 
-		console.log('33')
 	}
 
 	Vendor.prototype.getTotal = function(currency){
@@ -88,7 +85,7 @@ angular.module('app').factory('Vendor',function($q,Receipt){
 
 				angular.extend(receipt,{
 					pgpMessage:pgpMessage
-					,xml:'<receipt>'+btoa(pgpMessage)+'<receipt>'
+					,manifest:'<receipt>'+btoa(pgpMessage)+'<receipt>'
 				})
 
 				resolve(receipt)
