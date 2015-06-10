@@ -1,4 +1,4 @@
-var app = angular.module('app',['ui.bootstrap','angular-growl'])
+var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-timeago'])
 
 app.config(function(growlProvider) {
     growlProvider.globalTimeToLive(5000);

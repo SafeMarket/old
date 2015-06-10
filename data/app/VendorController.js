@@ -34,7 +34,10 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 		})
 
 	$scope.$watch('vendor.data.products',function(product){
-		if(!$scope.vendor) return
+		if(!$scope.vendor){
+			$scope.product = null
+			return
+		}
 
 		$scope.totals = {
 			vendor_currency:$scope.vendor.getTotal()
@@ -44,10 +47,16 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 	},true)
 
 	$scope.checkout = function(){
-		$scope.vendor.getReceiptPromise().then(function(receipt){
-			console.log(receipt)
-			$rootScope.$broadcast('receipt',receipt)
-		})
+		console.log($scope.message)
+		try{
+			$scope.vendor.getReceiptPromise($scope.message).then(function(receipt){
+				console.log($scope.message)
+				$rootScope.$broadcast('receipt',receipt)
+			})
+		}catch(error){
+			console.log(error)
+			growl.addErrorMessage(error)
+		}
 	}
 
 })

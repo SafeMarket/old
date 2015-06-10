@@ -1,7 +1,11 @@
 angular.module('app').controller('OrderController',function($scope,Order){
 
 	$scope.$watch('receipt',function(receipt){
-		if(!receipt) return
+		if(!receipt) {
+			$scope.order = null
+			return
+		}
+		
 		Order.fromReceiptPromise(receipt).then(function(order){
 			console.log(order)
 			$scope.order = order

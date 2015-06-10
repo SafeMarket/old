@@ -57,6 +57,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order){
 	}
 
 	Vendor.prototype.getReceiptPromise = function(message){
+
+		console.log(Order.getCurrentEpoch())
 		
 		var vendor = this
 			,order = new Order({
@@ -66,9 +68,10 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order){
 				,vendor_name:this.data.name
 				,vendor_mk_public:this.data.mk_public
 				,vendor_pgp_public:this.data.pgp_public
-				,epoch:0
-				,index:0
+				,epoch:Order.getCurrentEpoch()
+				,index:Order.getRandomIndex()
 				,products:this.data.products
+				,message:message
 			})
 
 		console.log(order)

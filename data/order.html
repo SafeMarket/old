@@ -5,5 +5,23 @@
 	    	<td>Receipt</td>
 	    	<td><input ng-model="receipt" class="form-control"></td>
 	    </tr>
-  </table>
+	  	<tbody ng-if="order" class="table">
+	  		<tr>
+		  		<td>When</td>
+		  		<td>{{order.data.epoch*1000 | timeAgo}}</td>
+	  		</tr>
+	  		<tr>
+		  		<td>Derivation Path</td>
+		  		<td><code>{{order.derivationPath}}</code></td>
+	  		</tr>
+	  		<tr>
+		  		<td>Address</td>
+		  		<td><code>{{order.address}}</code></td>
+	  		</tr>
+	  		<tr>
+		  		<td>Message</td>
+		  		<td>{{order.data.message}}</td>
+	  		</tr>
+	  	</tbody>
+	</table>
 </div>

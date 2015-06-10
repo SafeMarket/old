@@ -4,6 +4,7 @@
   <script src="components/angular/angular.min.js"></script>
   <script src="components/angular-bootstrap/ui-bootstrap.min.js"></script>
   <script src="components/angular-growl/build/angular-growl.min.js"></script>
+  <script src="components/angular-timeago/src/timeAgo.js"></script>
   <script src="components/xml2json/xml2json.js"></script>
   <script src="components/validate/validate.min.js"></script>
   <script src="components/openpgp/dist/openpgp.min.js"></script>
@@ -34,11 +35,11 @@
   <link rel="stylesheet" href="components/angular-growl/build/angular-growl.min.css"></script>
   <style>
     /* Forms */
-    form .ng-invalid {
+    form .ng-invalid, .validate.ng-invalid {
       border-color: red !important;
       outline-color: red;
     }
-    form .ng-valid {
+    form .ng-valid, .validate.ng-valid {
       border-color: green !important;
       outline-color: green;
     }
