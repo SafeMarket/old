@@ -1,32 +1,42 @@
 <div ng-controller="VendorController" class="container">
-  <div ng-show="!vendor" class="alert alert-danger text-center" style="margin-top:15px">
-    {{error}}
-  </div>
-  <div ng-show="!!vendor">
-    <h1>{{vendor.name}}</h1>
+  <h1>Vendor<span ng-if="vendor">: {{vendor.data.name}}</span></h1>
+  <table class="table">
+    <tr>
+      <td>Manifest</td>
+      <td><input ng-model="manifest" class="form-control"></td>
+    </tr>
+  </table>
+  <div ng-if="!!vendor">
     <table class="table" style="">
-      <tr ng-repeat="product in vendor.products">
+      <tr ng-repeat="product in vendor.data.products">
         <td>{{product.name}}</td>
-        <td>{{product.price}} {{vendor.currency}}</td>
+        <td>{{product.price}} {{vendor.data.currency}}</td>
+        <td>{{product.price}} {{settings.currency}}</td>
         <td><input type="number" min="0" ng-model="product.quantity" class="form-control"></td>
       </tr>
       <tr>
-        <td></td><td></td><td>{{totals.vendor_currency | number:6}} {{vendor.currency}}</td>
+        <td></td><td></td><td></td><td>{{totals.vendor_currency | number:6}} {{vendor.data.currency}}</td>
       </tr>
       <tr>
-        <td></td><td></td><td>{{totals.btc | number:6}} BTC</td>
+        <td></td><td></td><td></td><td>{{totals.btc | number:6}} BTC</td>
       </tr>
       <tr>
         <td colspan="2">
           Message
-          <p class="text-muted">We will automatically encrypt this</p>
+          <p class="text-muted">We'll the vendor's PGP key to automatically encrypt your message.</p>
         </td>
-        <td>
+        <td colspan="2">
           <textarea class="form-control" model="message"></textarea>
         </td>
       </tr>
       <tr>
-        <td colspan="2"></td>
+        <td colspan="2">
+          Vendor's PGP Key
+        </td>
+        <td colspan="2"><pre class="pre">{{vendor.data.pgp_public}}</pre></td>
+      </tr>
+      <tr>
+        <td colspan="3"></td>
         <td><button class="btn btn-primary" ng-click="checkout()">Submit</button></td>
       </tr>
     </table>

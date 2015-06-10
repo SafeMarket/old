@@ -1,4 +1,4 @@
-angular.module('app').factory('storage',function(){
+app.factory('storage',function($rootScope){
 	
 
 	var storage = {
@@ -19,6 +19,8 @@ angular.module('app').factory('storage',function(){
 	storage.save = function(){
 		if(localStorage)
 			localStorage.setItem('app',JSON.stringify(this.data))
+
+		$rootScope.$broadcast('storage.save')
 	} 
 
 	storage.fetch()

@@ -3,7 +3,7 @@
   <script src="components/lodash/lodash.min.js"></script>
   <script src="components/angular/angular.min.js"></script>
   <script src="components/angular-bootstrap/ui-bootstrap.min.js"></script>
-  <script src="components/angular-bootstrap-show-errors/src/showErrors.min.js"></script>
+  <script src="components/angular-growl/build/angular-growl.min.js"></script>
   <script src="components/xml2json/xml2json.js"></script>
   <script src="components/validate/validate.min.js"></script>
   <script src="components/openpgp/dist/openpgp.min.js"></script>
@@ -18,17 +18,19 @@
   <script src="components/bip39/src/js/jsbip39.js"></script>
   <script src="app/app.js"></script>
   <script src="app/storage.js"></script>
-  <script src="app/rates.js"></script>
+  <script src="app/ticker.js"></script>
   <script src="app/convert.js"></script>
   <script src="app/blockchain.js"></script>
   <script src="app/Vendor.js"></script>
-  <script src="app/Receipt.js"></script>
+  <script src="app/Order.js"></script>
   <script src="app/AppController.js"></script>
   <script src="app/SettingsController.js"></script>
+  <script src="app/ProductsController.js"></script>
   <script src="app/VendorController.js"></script>
-  <script src="app/ReceiptController.js"></script>
+  <script src="app/OrderController.js"></script>
   <script src="app/ManifestController.js"></script>
   <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css"></script>
+  <link rel="stylesheet" href="components/angular-growl/build/angular-growl.min.css"></script>
   <style>
     /* Forms */
     form .ng-invalid {
@@ -39,6 +41,10 @@
       border-color: green !important;
       outline-color: green;
     }
+    .growl{
+      top:auto;
+      bottom: 0;
+    }
   </style>
 </head>
 <body ng-app="app">
@@ -48,17 +54,28 @@
         <div class="row">
           <div class="col-xs-6"></div>
           <div class="col-xs-6">
-            <select ng-model="page" class="form-control">
+            <select ng-model="page" class="form-control" style="margin-top:6px">
               <option value="settings">Settings</option>
+              <option value="products">Products</option>
               <option value="manifest">Manifest</option>
+              <option value="vendor">Vendor</option>
+              <option value="order">Order</option>
             </select>
           </div>
         </div>
       </div>
     </nav>
     <div class="container">
-      <div ng-if="page==='settings'" ng-include="'settings.html'"></div>
+      <input class="form-control" ng-model="password" placeholder="password">
+    </div>
+    <div class="container">
+      <div ng-show="page==='settings'" ng-include="'settings.html'"></div>
+      <div ng-show="page==='products'" ng-include="'products.html'"></div>
+      <div ng-show="page==='manifest'" ng-include="'manifest.html'"></div>
+      <div ng-show="page==='vendor'" ng-include="'vendor.html'"></div>
+      <div ng-show="page==='order'" ng-include="'order.html'"></div>
     </div>
   </div>
+  <div growl></div>
 </body>
 </html>

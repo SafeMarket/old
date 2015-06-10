@@ -1,0 +1,25 @@
+<div ng-controller="ProductsController">
+  <form name="productsForm" ng-submit="save()" novalidate>
+    <h1>Products</h3>
+    <table class="table">
+      <tbody ng-repeat="product in products">
+        <tr>
+          <td>
+            <input ng-model="product.name" class="form-control" placeholder="Name" required>
+          </td>
+          <td>
+            <input ng-model="product.price" class="form-control"  placeholder="Price ({{currency}})" required price>
+          </td>
+          <td><a ng-click="deleteProduct($index)" class="btn btn-danger">X</a></td>
+        </tr>
+      </tbody>
+      <tr>
+        <td></td>
+        <td colspan="2">
+          <a ng-click="products.push({})" class="btn btn-success">+</a>
+          <button class="btn btn-primary">Save</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>

@@ -1,11 +1,18 @@
 <div ng-controller="SettingsController">
 	<h1>Settings</h1>
-	<form name="settingsForm" ng-submit="settingsForm.$valid && saveSettings()">
+	<form name="settingsForm" ng-submit="save()" novalidate>
 	<table class="table">
 		<tr>
 			<td>Name</td>
 			<td>
 				<input type="text" name="name" class="form-control" required ng-model="settings.name">
+			</td>
+		</tr>
+		<tr>
+			<td>Currency</td>
+			<td>
+				<select type="text" name="currency" ng-model="settings.currency" ng-options="currency for currency in currencies" class="form-control" required>
+				</select>
 			</td>
 		</tr>
 		<tr>
@@ -24,6 +31,12 @@
 			<td>PGP Private Key</td>
 			<td>
 				<textarea type="text" name="pgp_private" class="form-control" required pgp-private ng-model="settings.pgp_private"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>PGP Password (Optional)</td>
+			<td>
+				<input type="text" name="pgp_password" class="form-control" ng-model="settings.pgp_password">
 			</td>
 		</tr>
 		<tr>

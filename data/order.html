@@ -1,0 +1,9 @@
+<div ng-controller="OrderController">
+	<h1>Order<span ng-if="order">: {{order.data.buyer_name}} -> {{order.data.vendor_name}}</span></h1>
+	<table class="table">
+	    <tr>
+	    	<td>Receipt</td>
+	    	<td><input ng-model="receipt" class="form-control"></td>
+	    </tr>
+  </table>
+</div>
