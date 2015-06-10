@@ -5,9 +5,17 @@ app.config(function(growlProvider) {
     growlProvider.onlyUniqueMessages(false)
 });
 
-app.run(function(ticker){
+app.run(function($rootScope,ticker){
 	//force ticker to start
 })
+
+_.json64 = {
+	encode:function(object){
+		return btoa(JSON.stringify(object))
+	},decode:function(string){
+		return JSON.parse(atob(string))
+	}
+}
 
 app.directive('price', function() {
   return {

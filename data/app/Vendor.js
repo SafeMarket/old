@@ -1,4 +1,4 @@
-app.factory('Vendor',function($q,convert,ticker,storage){
+app.factory('Vendor',function($q,convert,ticker,storage,Order){
 
 
 	function Vendor(vendorData){
@@ -59,28 +59,30 @@ app.factory('Vendor',function($q,convert,ticker,storage){
 	Vendor.prototype.getReceiptPromise = function(message){
 		
 		var vendor = this
-			,receiptData = {
+			,order = new Order({
 				buyer_name:storage.data.settings.name
 				,buyer_pgp_public:storage.data.settings.pgp_public
+				,buyer_mk_public:new BIP32(storage.data.settings.mk_private).extended_public_key_string()
 				,vendor_name:this.data.name
+				,vendor_mk_public:this.data.mk_public
+				,vendor_pgp_public:this.data.pgp_public
 				,epoch:0
 				,index:0
 				,products:this.data.products
-			},receiptDataJson = JSON.stringify(receiptData)
-
-		return $q(function(resolve,reject){
-			openpgp.encryptMessage(
-				vendor.key.keys
-				,receiptDataJson
-			).then(function(pgpMessage){
-				resolve('<receipt>'+btoa(pgpMessage)+'</receipt>')
 			})
-		})
+
+		console.log(order)
+
+		return order.receiptPromise
 	}
 
-	Vendor.fromManifest = function(vendorManifest){
+	Vendor.fromManifest = function(manifest){
 
-		var vendorData = JSON.parse(atob(vendorManifest.replace('<manifest>','').replace('</manifest>','')))
+		console.log(manifest)
+
+		var vendorData = _.json64.decode(manifest.replace('<manifest>','').replace('</manifest>',''))
+
+		console.log(vendorData)
 
 		if(!vendorData)
 			throw 'Invalid manifest'

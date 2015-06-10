@@ -1,14 +1,20 @@
-angular.module('app').factory('Order',function($q,blockchain,storage){
+angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 
-	function Order(orderData){
+	function Order(orderData,receipt){
 		var indexMax = Math.pow(2,31)-1
 			,products = []
+			,order = this
 
 		var constraints = {
 			buyer_name:{presence:true}
-			,vendor_name:{presence:true}
+			,buyer_mk_public:{presence:true}
 			,buyer_pgp_public:{presence:true}
+			,vendor_name:{presence:true}
+			,vendor_mk_public:{presence:true}
+			,vendor_pgp_public:{presence:true}
 			,products:{presence:true,array:true}
+			,index:{presence:true}
+			,epoch:{presence:true}
 		}
 
 		var validation = validate(orderData,constraints)
@@ -17,39 +23,37 @@ angular.module('app').factory('Order',function($q,blockchain,storage){
 			throw validation[Object.keys(validation)[0]][0]
 
 		this.data = orderData
+
+		var orderDataJson = JSON.stringify(orderData)
+	
+		if(receipt)
+			this.receipt = receipt
+		else
+			this.receiptPromise = $q(function(resolve,reject){
+				console.log('receiptPromise')
+				pgp.getEncryptPromise([orderData.buyer_pgp_public],orderDataJson).then(function(pgpMessage){
+					console.log(pgpMessage)
+					order.receipt = '<receipt>'+btoa(pgpMessage)+'</receipt>'
+					resolve(order.receipt)
+				}).catch(function(error){
+					console.log(error)
+					reject(error)
+				})
+			})
 	}
 
 
+
+
 	Order.fromReceiptPromise = function(receipt){
-
-		var key = storage.data.settings.pgp_private
-			,privateKey = openpgp.key.readArmored(key).keys[0];
-		
-		privateKey.decrypt(storage.data.settings.pgp_password)
-
-		var pgpMessage = atob(receipt.replace('<receipt>','').replace('</receipt>',''))
-			,pgpMessage = openpgp.message.readArmored(pgpMessage);
-
 		return $q(function(resolve,reject){
-			console.log('sdf')
-			openpgp.decryptMessage(privateKey, pgpMessage).then(function(orderDataJson) {
-				console.log(orderDataJson)
-			    
-			    var orderData = JSON.parse(orderDataJson)
-			    
-			    try{
-			    	var order = new Order(orderData)
-			    }catch(error){
-			    	console.log(error)
-			    	reject(error) 
-			    }
-
-			    console.log(order)
-
-			    resolve(order)
-			}).catch(function(error) {
-			    // failure
-			});
+			pgp.getDecryptPromise(
+					storage.data.settings.pgp_private
+					,storage.data.settings.pgp_password
+					,atob(receipt.replace('<receipt>','').replace('</receipt>',''))
+				).then(function(orderDataJson){
+					resolve(new Order(JSON.parse(orderDataJson),receipt))
+				})
 		})
 
 	}
