@@ -1,5 +1,17 @@
 var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-timeago'])
 
+if(self.port)
+  self.port.on('load',function(data){
+    console.log('load',data)
+    data=data?data:{}
+    
+    localStorage.setItem('app',JSON.stringify(data))
+
+    console.log('bootstrap')
+    angular.bootstrap(document, ['app']);
+  })
+
+
 app.config(function(growlProvider) {
     growlProvider.globalTimeToLive(5000);
     growlProvider.onlyUniqueMessages(false)

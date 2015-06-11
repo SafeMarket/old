@@ -1,6 +1,12 @@
 angular.module('app').controller('ManifestController',function($scope,storage,Vendor,ticker){
 	
 	function updateManifest(){
+		var vendorData = storage.data.settings
+
+		if(!vendorData)
+			return
+
+		//vendorData.products = storage.data.products
 		$scope.manifest = (new Vendor(vendorData)).manifest
 	}
 
