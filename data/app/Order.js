@@ -58,6 +58,8 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 					reject(error)
 				})
 			})
+
+		order.getUpdatePromise()
 	}
 
 	Order.indexMax = Math.pow(2,31)-1
@@ -90,17 +92,14 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 	}
 
 	Order.prototype.getUpdatePromise = function(){
-		var receipt = this
+		var order = this
 		return blockchain.getAddressPromise(this.address).success(function(response){
-				
-				receipt.received = response.total_received / Math.pow(10,8)
-				receipt.balance = response.final_balance / Math.pow(10,8)
-
-				receipt.status = response.received >= receipt.total ? 'paid' : 'unpaid'
-
-			}).error(function(response){
-				console.log('error')
-			})
+			order.received = response.total_received / Math.pow(10,8)
+			order.balance = response.final_balance / Math.pow(10,8)
+			receipt.status = response.received >= receipt.total ? 'paid' : 'unpaid'
+		}).error(function(response){
+			console.log('error')
+		})
 	}
 
 	Order.prototype.setAddress = function(){
