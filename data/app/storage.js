@@ -5,25 +5,18 @@ app.factory('storage',function($rootScope){
 		data:{}
 	}
 
-	if(!self.port){
-		var dataJson = localStorage.getItem('app')
+	var dataJson = localStorage.getItem('app')
 
-		if(dataJson)
-			storage.data = JSON.parse(dataJson) ? JSON.parse(dataJson) : {}
-		else
-			storage.data = {}
-	}
+	if(dataJson)
+		storage.data = JSON.parse(dataJson) ? JSON.parse(dataJson) : {}
+	else
+		storage.data = {}
 
-	
 	storage.save = function(){
-		console.log('save')
-		console.log(self.port)
-		if(localStorage)
-			localStorage.setItem('app',JSON.stringify(this.data))
-		else if(self.port){
-			console.log('emit store')
+		if(self.port){
 			self.port.emit('store',this.data)
-		}
+		}else if(localStorage)
+			localStorage.setItem('app',JSON.stringify(this.data))
 		else
 			throw 'Unkown storage'
 

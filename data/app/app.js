@@ -1,9 +1,18 @@
 var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-timeago'])
 
-app.config(function(growlProvider) {
+if(self.port)
+  self.port.on('load',function(data){
+    data=data?data:{}
+    localStorage.setItem('app',JSON.stringify(data))
+    angular.bootstrap(document, ['app']);
+  })
+
+
+app.config(function(growlProvider,$provide) {
     growlProvider.globalTimeToLive(5000);
-    growlProvider.onlyUniqueMessages(false)
+    growlProvider.onlyUniqueMessages(false);
 });
+
 
 app.run(function($rootScope,ticker){
 	//force ticker to start

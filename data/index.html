@@ -52,7 +52,7 @@
     }
   </style>
 </head>
-<body ng-app="app">
+<body>
   <div ng-controller="AppController">
     <nav class="navbar navbar-inverse navbar-top">
       <div class="container">
@@ -71,13 +71,13 @@
       </div>
     </nav>
     <div class="container">
-      <div ng-show="page==='settings'" ng-include="'settings.html'"></div>
-      <div ng-show="page==='products'" ng-include="'products.html'"></div>
-      <div ng-show="page==='manifest'" ng-include="'manifest.html'"></div>
-      <div ng-show="page==='vendor'" ng-include="'vendor.html'"></div>
-      <div ng-show="page==='order'" ng-include="'order.html'"></div>
+      <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
+      <div ng-show="page==='products'" ng-include="path+'products.html'"></div>
+      <div ng-show="page==='manifest'" ng-include="path+'manifest.html'"></div>
+      <div ng-show="page==='vendor'" ng-include="path+'vendor.html'"></div>
+      <div ng-show="page==='order'" ng-include="path+'order.html'"></div>
     </div>
   </div>
-  <div growl></div>
+  <div growl limit-messages="3"></div>
 </body>
 </html>

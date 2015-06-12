@@ -22,6 +22,12 @@
 			</td>
 		</tr>
 		<tr>
+			<td>PGP Passphrase (Optional)</td>
+			<td>
+				<input type="text" name="pgp_passphrase" class="form-control" ng-model="settings.pgp_passphrase">
+			</td>
+		</tr>
+		<tr>
 			<td>PGP Public Key</td>
 			<td>
 				<textarea type="text" name="pgp_public" class="form-control" required pgp-public ng-model="settings.pgp_public"></textarea>
@@ -31,12 +37,6 @@
 			<td>PGP Private Key</td>
 			<td>
 				<textarea type="text" name="pgp_private" class="form-control" required pgp-private ng-model="settings.pgp_private"></textarea>
-			</td>
-		</tr>
-		<tr>
-			<td>PGP Password (Optional)</td>
-			<td>
-				<input type="text" name="pgp_password" class="form-control" ng-model="settings.pgp_password">
 			</td>
 		</tr>
 		<tr>
