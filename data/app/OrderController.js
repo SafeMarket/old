@@ -1,4 +1,4 @@
-angular.module('app').controller('OrderController',function($scope,Order){
+angular.module('app').controller('OrderController',function($scope,Order,growl){
 
 	$scope.$watch('receipt',function(receipt){
 		if(!receipt) {
@@ -6,10 +6,16 @@ angular.module('app').controller('OrderController',function($scope,Order){
 			return
 		}
 		
-		Order.fromReceiptPromise(receipt).then(function(order){
-			console.log(order)
-			$scope.order = order
-		})
+		try{
+			Order.fromReceiptPromise(receipt).then(function(order){
+				console.log(order)
+				$scope.order = order
+			},function(error){
+				growl.addErrorMessage(error)
+			})
+		}catch(error){
+			growl.addErrorMessage(error)
+		}
 	})
 
 	$scope.$on('receipt',function($event,receipt){

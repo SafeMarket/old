@@ -1,10 +1,22 @@
-angular.module('app').service('blockchain',function($http){
+angular.module('app').service('blockchain',function($http,$q){
 
-	function Blockchain(){}
+	var blockchain = {}
 
-	Blockchain.prototype.getAddressPromise = function(address){
-		return $http.get('https://blockchain.info/rawaddr/'+address+'?cors=true')
+	blockchain.getAddressPromise = function(address){
+		return $q(function(resolve,reject){
+			$http
+				.get('https://blockchain.info/rawaddr/'+address+'?cors=true')
+				.success(function(response){
+					console.log(response)
+					resolve(response)
+				})
+				.error(function(error){
+					console.log(error)
+					reject(error)
+				})
+		})
 	}
 
-	return new Blockchain
+	return blockchain
+
 })

@@ -57,9 +57,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order){
 	}
 
 	Vendor.prototype.getReceiptPromise = function(message){
-
-		console.log(Order.getCurrentEpoch())
-		
+	
 		var vendor = this
 			,order = new Order({
 				buyer_name:storage.data.settings.name
@@ -74,18 +72,13 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order){
 				,message:message
 			})
 
-		console.log(order)
 
 		return order.receiptPromise
 	}
 
 	Vendor.fromManifest = function(manifest){
 
-		console.log(manifest)
-
 		var vendorData = _.json64.decode(manifest.replace('<manifest>','').replace('</manifest>',''))
-
-		console.log(vendorData)
 
 		if(!vendorData)
 			throw 'Invalid manifest'

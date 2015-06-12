@@ -5,14 +5,8 @@
                    screenY="23"
                    sizemode="normal"
                    screenX="0"
-                   width="680"
-                   height="741" />
-  <RDF:Description RDF:about="chrome://browser/content/browser.xul#sidebar-box"
-                   sidebarcommand=""
-                   width=""
-                   src="" />
-  <RDF:Description RDF:about="chrome://browser/content/browser.xul#titlebar-placeholder-on-TabsToolbar-for-fullscreen-button"
-                   width="16" />
+                   height="741"
+                   width="1181" />
   <RDF:Description RDF:about="chrome://browser/content/browser.xul">
     <NC:persist RDF:resource="chrome://browser/content/browser.xul#navigator-toolbox"/>
     <NC:persist RDF:resource="chrome://browser/content/browser.xul#main-window"/>
@@ -25,4 +19,10 @@
                    iconsize="small" />
   <RDF:Description RDF:about="chrome://browser/content/browser.xul#titlebar-placeholder-on-TabsToolbar-for-captions-buttons"
                    width="61" />
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul#sidebar-box"
+                   sidebarcommand=""
+                   width=""
+                   src="" />
+  <RDF:Description RDF:about="chrome://browser/content/browser.xul#titlebar-placeholder-on-TabsToolbar-for-fullscreen-button"
+                   width="16" />
 </RDF:RDF>

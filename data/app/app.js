@@ -2,20 +2,17 @@ var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-
 
 if(self.port)
   self.port.on('load',function(data){
-    console.log('load',data)
     data=data?data:{}
-    
     localStorage.setItem('app',JSON.stringify(data))
-
-    console.log('bootstrap')
     angular.bootstrap(document, ['app']);
   })
 
 
-app.config(function(growlProvider) {
+app.config(function(growlProvider,$provide) {
     growlProvider.globalTimeToLive(5000);
-    growlProvider.onlyUniqueMessages(false)
+    growlProvider.onlyUniqueMessages(false);
 });
+
 
 app.run(function($rootScope,ticker){
 	//force ticker to start

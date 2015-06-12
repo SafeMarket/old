@@ -13,10 +13,7 @@ app.factory('storage',function($rootScope){
 		storage.data = {}
 
 	storage.save = function(){
-		console.log('save')
-		console.log(self.port)
 		if(self.port){
-			console.log('emit store',this.data)
 			self.port.emit('store',this.data)
 		}else if(localStorage)
 			localStorage.setItem('app',JSON.stringify(this.data))

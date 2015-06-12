@@ -15,4 +15,5 @@ app.controller('SettingsController',function($scope,storage,$timeout,ticker,grow
 		storage.save()
 		growl.addSuccessMessage('Settings saved')
 	}
+
 })

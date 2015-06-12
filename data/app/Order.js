@@ -1,4 +1,4 @@
-angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
+angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl){
 
 	function Order(orderData,receipt){
 		var products = []
@@ -39,6 +39,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 			throw 'Order total should be greater than 0'
 
 		this.data = orderData
+		this.total = total
 		this.setDerivationPath() 
 		this.setAddress() 
 
@@ -59,7 +60,12 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 				})
 			})
 
-		order.getUpdatePromise()
+		growl.addInfoMessage('Updating order status from blockchain')
+		order.getUpdatePromise(function(order){
+			growl.addSuccessMessage('Order updated')
+		},function(error){
+			growl.addErrorMessage(error)
+		})
 	}
 
 	Order.indexMax = Math.pow(2,31)-1
@@ -82,10 +88,12 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 		return $q(function(resolve,reject){
 			pgp.getDecryptPromise(
 					storage.data.settings.pgp_private
-					,storage.data.settings.pgp_password
+					,storage.data.settings.pgp_passphrase
 					,atob(receipt.replace('<receipt>','').replace('</receipt>',''))
 				).then(function(orderDataJson){
 					resolve(new Order(JSON.parse(orderDataJson),receipt))
+				},function(error){
+					reject(error)
 				})
 		})
 
@@ -93,12 +101,16 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp){
 
 	Order.prototype.getUpdatePromise = function(){
 		var order = this
-		return blockchain.getAddressPromise(this.address).success(function(response){
-			order.received = response.total_received / Math.pow(10,8)
-			order.balance = response.final_balance / Math.pow(10,8)
-			receipt.status = response.received >= receipt.total ? 'paid' : 'unpaid'
-		}).error(function(response){
-			console.log('error')
+		return $q(function(resolve,reject){
+			blockchain.getAddressPromise(order.address).then(function(response){
+				console.log(response)
+				order.received = response.total_received / Math.pow(10,8)
+				order.balance = response.final_balance / Math.pow(10,8)
+				order.status = response.received >= order.data.total ? 'paid' : 'unpaid'
+				resolve(order)
+			},function(error){
+				reject(error)
+			})
 		})
 	}
 
