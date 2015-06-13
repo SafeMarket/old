@@ -1,38 +1,30 @@
-app.factory('Vendor',function($q,convert,ticker,storage,Order){
+app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 
 
 	function Vendor(vendorData){
 
-		vendorData.mk_public = vendorData.mk_public ?
-			vendorData.mk_public : (new BIP32(vendorData.mk_private)).extended_public_key_string()
-
-		var constraints = {
-			name:{presence:true}
-			,pgp_public:{presence:true}
-			,currency:{presence:true,inclusion:Object.keys(ticker.rates)}
-			,products:{presence:true,array:true}
-			,mk_public:{presence:true,startsWith:'xpub'}
+		var vendorConstraints = {
+			name:{presence:true,type:'string'}
+			,pgp_public:{presence:true,type:'string'}
+			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
+			,products:{presence:true,type:'array'}
+			,mk_public:{presence:true,startsWith:'xpub',type:'string'}
+		},productConstraints = {
+			name:{presence:true,type:'string'}
+			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
 		}
 
-		var vendorValidation = validate(vendorData,constraints)
+		check(vendorData,vendorConstraints)
 
-		if(vendorValidation)
-			throw vendorValidation[Object.keys(vendorValidation)[0]][0]
+		vendorData.products.forEach(function(product){
+			check(product,productConstraints)
+		})
 
-		
 		this.data = vendorData
-		this.manifestData = {
-			name:this.data.name
-			,currency:this.data.currency
-			,pgp_public:this.data.pgp_public
-			,mk_public: this.data.mk_public
-			,products:angular.copy(this.data.products)
-		}
-		this.manifest = '<manifest>'+btoa(JSON.stringify(this.manifestData))+'</manifest>'
+		this.manifest = '<manifest>'+btoa(JSON.stringify(this.data))+'</manifest>'
 
 		this.data.products.forEach(function(product){
-			product.quantity = product.quantity ? product.quantity : 0
-			product.price = parseFloat(product.price)
+			product.quantity = 0
 		})
 
 		this.key = openpgp.key.readArmored(this.data.pgp_public)
@@ -41,10 +33,13 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order){
 
 	Vendor.prototype.getTotal = function(currency){
 
-		var total = 0
+		var total = new Decimal(0)
 
 		this.data.products.forEach(function(product){
-			total += (product.quantity*product.price)
+			var subTotal = (new Decimal(product.quantity)).times(product.price)
+			console.log(subTotal)
+			total = total.plus(subTotal)
+			console.log(total)
 		})
 
 		if(!currency)
@@ -57,18 +52,31 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order){
 	}
 
 	Vendor.prototype.getReceiptPromise = function(message){
+
+		var products = []
+			,vendor = this
+
+		this.data.products.forEach(function(product){
+			if(product.quantity==0) return true
+		
+			products.push({
+				name:product.name
+				,price:''+convert(product.price,{from:vendor.data.currency,to:'satoshi'})
+				,quantity:product.quantity
+			})
+		})
 	
-		var vendor = this
+		var settings = storage.get('settings')
 			,order = new Order({
-				buyer_name:storage.data.settings.name
-				,buyer_pgp_public:storage.data.settings.pgp_public
-				,buyer_mk_public:new BIP32(storage.data.settings.mk_private).extended_public_key_string()
+				buyer_name:settings.name
+				,buyer_pgp_public:settings.pgp_public
+				,buyer_mk_public:_.bipPrivateToPublic(settings.mk_private)
 				,vendor_name:this.data.name
 				,vendor_mk_public:this.data.mk_public
 				,vendor_pgp_public:this.data.pgp_public
 				,epoch:Order.getCurrentEpoch()
 				,index:Order.getRandomIndex()
-				,products:this.data.products
+				,products:products
 				,message:message
 			})
 

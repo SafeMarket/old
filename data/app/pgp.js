@@ -18,17 +18,25 @@ app.factory('pgp',function($q,$timeout,growl){
 					growl.adErrorMessage('Something went wrong')
 				    reject(error)
 				});
-			},500)
+			},1000)
 		})
 	}
 
 	pgp.getDecryptPromise = function(armoredPrivateKey,privateKeyPassword,armoredMessage){
 
+		if(!armoredPrivateKey)
+			throw 'Private key not set'
+
+		if(!armoredMessage)
+			throw 'Missing armored message'
+
+
 		growl.addInfoMessage('Executing pgp decryption...')
 
 		var privateKey = openpgp.key.readArmored(armoredPrivateKey).keys[0]
 			,pgpMessage = openpgp.message.readArmored(armoredMessage)
-			,privateKeyPassword = typeof privateKeyPassword==='string'?privateKeyPassword:''
+		
+		privateKeyPassword = typeof privateKeyPassword==='string'?privateKeyPassword:''
 
 		privateKey.decrypt(privateKeyPassword)
 
@@ -41,7 +49,7 @@ app.factory('pgp',function($q,$timeout,growl){
 					growl.adErrorMessage('Something went wrong')	
 					reject(error)
 				})
-			},500)
+			},1000)
 		})
 	}
 

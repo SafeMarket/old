@@ -2,7 +2,8 @@ var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-
 
 if(self.port)
   self.port.on('load',function(data){
-    data=data?data:{}
+    data = typeof data==='object'? data:{}
+
     localStorage.setItem('app',JSON.stringify(data))
     angular.bootstrap(document, ['app']);
   })
@@ -24,6 +25,16 @@ _.json64 = {
 	},decode:function(string){
 		return JSON.parse(atob(string))
 	}
+}
+
+_.doKeysMatch = function(a, b) {
+  var aKeys = Object.keys(a).sort();
+  var bKeys = Object.keys(b).sort();
+  return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+}
+
+_.bipPrivateToPublic = function(privateKey){
+  return (new BIP32(privateKey)).extended_public_key_string()
 }
 
 app.directive('price', function() {
@@ -107,11 +118,14 @@ app.directive('pgpPrivate', function() {
 });
 
 
-validate.validators.array = function(value, options, key, attributes) {
-	return Array.isArray(value) ? null : key+' is not an array'
+validate.validators.type = function(value, options, key, attributes) {
+  if(options==='array')
+    return typeof Array.isArray(value) ? null : 'is not an array'
+
+	return typeof value===options ? null : 'is not a '+options
 };
 
 validate.validators.startsWith = function(value, options, key, attributes) {
-	return _.startsWith(value,options) ? null : key+' does not start with '+options
+	return _.startsWith(value,options) ? null : 'does not start with '+options
 };
 

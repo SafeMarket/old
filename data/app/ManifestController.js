@@ -1,11 +1,15 @@
 angular.module('app').controller('ManifestController',function($scope,storage,Vendor,ticker){
 	
 	function updateManifest(){
-		if(!storage.data.settings || !storage.data.products)
+		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
+		$scope.areProductsComplete = typeof storage.get('products') === 'object' && storage.get('products').length>0
+
+		if(!storage.get('settings') || !storage.get('products'))
 			return
 
-		var vendorData = storage.data.settings
-		vendorData.products = storage.data.products
+		var vendorData = storage.get('settings')
+		vendorData.mk_public = _.bipPrivateToPublic(vendorData.mk_private)
+		vendorData.products = storage.get('products')
 
 		$scope.manifest = (new Vendor(vendorData)).manifest
 	}
@@ -18,11 +22,7 @@ angular.module('app').controller('ManifestController',function($scope,storage,Ve
 		updateManifest()
 	})
 
-	$scope.areSettingsComplete = storage.data.settings
-	$scope.areProductsComplete = storage.data.products && storage.data.products.length>0
 
-
-	if($scope.areSettingsComplete && $scope.areProductsComplete && ticker.isSet)
+	if(ticker.isSet)
 		updateManifest()
-
 })

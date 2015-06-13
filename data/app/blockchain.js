@@ -7,11 +7,9 @@ angular.module('app').service('blockchain',function($http,$q){
 			$http
 				.get('https://blockchain.info/rawaddr/'+address+'?cors=true')
 				.success(function(response){
-					console.log(response)
 					resolve(response)
 				})
 				.error(function(error){
-					console.log(error)
 					reject(error)
 				})
 		})

@@ -15,11 +15,19 @@ app.factory('ticker',function($interval,$http,$rootScope,storage){
 		$http.get('https://bitpay.com/api/rates').success(function(response){
 			var rates = {}
 			response.forEach(function(currency){
-				rates[currency.code] = currency.rate
+				rates[currency.code] = new Decimal(currency.rate)
 			})
+
+			if(rates['BTC'])
+			rates['satoshi'] = rates['BTC'].times(Math.pow(10,9));
+
+			console.log(rates)
+
+
 			ticker.isSet = true
 			ticker.rates = rates
 			$rootScope.$broadcast('ticker.rates',rates)
+
 		})
 	}
 

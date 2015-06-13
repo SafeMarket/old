@@ -25,7 +25,6 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 
 			try{
 				$scope.vendor = Vendor.fromXml(options.vendorXml,options.rates)
-				console.log($scope.vendor)
 			}catch(err){
 				$scope.error=err
 			}
@@ -42,19 +41,19 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 		$scope.totals = {
 			vendor_currency:$scope.vendor.getTotal()
 			,btc:$scope.vendor.getTotal('BTC')
-			,my_currency:$scope.vendor.getTotal(storage.data.settings.currency)
+			,my_currency:$scope.vendor.getTotal(storage.get('settings').currency)
 		}
+
+		console.log($scope.totals)
 	},true)
 
 	$scope.checkout = function(){
-		console.log($scope.message)
 		try{
 			$scope.vendor.getReceiptPromise($scope.message).then(function(receipt){
-				console.log($scope.message)
 				$rootScope.$broadcast('receipt',receipt)
 			})
 		}catch(error){
-			console.log(error)
+			growl.addErrorMessage('Checkout failed')
 			growl.addErrorMessage(error)
 		}
 	}

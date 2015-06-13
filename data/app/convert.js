@@ -1,10 +1,29 @@
-app.factory('convert',function(ticker){
+app.factory('convert',function(ticker,check){
 	return function(amount,currencies){
+		if(currencies.from == currencies.to)
+			return amount
 
 		if(!ticker.rates.hasOwnProperty(currencies.from) || !ticker.rates.hasOwnProperty(currencies.to))
 			throw 'Invalid currency'
 
-		amount_btc = amount/ticker.rates[currencies.from]
-		return amount_btc*ticker.rates[currencies.to]
+		if(typeof amount!=='string')
+			amount = amount.toString()
+
+		check({
+			amount:amount
+		},{
+			amount:{presence:true,type:'string',numericality:{}}
+		})
+
+		amount = new Decimal(amount)
+		console.log('amount',amount)
+
+		var amount_btc = amount.div(ticker.rates[currencies.from])
+			,x =  console.log('amount_btc',amount_btc)
+			,amount_final =  (new Decimal(amount_btc)).times(ticker.rates[currencies.to])
+	
+		console.log('amount_final',amount_final)
+
+		return amount_final
 	}
 })

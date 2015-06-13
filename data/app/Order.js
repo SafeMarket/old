@@ -1,45 +1,40 @@
-angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl){
+angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,check){
 
 	function Order(orderData,receipt){
 		var products = []
 			,order = this
 
 		var orderConstraints = {
-			buyer_name:{presence:true}
-			,buyer_mk_public:{presence:true}
-			,buyer_pgp_public:{presence:true}
-			,vendor_name:{presence:true}
-			,vendor_mk_public:{presence:true}
-			,vendor_pgp_public:{presence:true}
-			,products:{presence:true,array:true}
-			,index:{presence:true,numericality:{noStrings: true,greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true,}}
-			,epoch:{presence:true,numericality:{noStrings: true,greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true}}
+			buyer_name:{presence:true,type:'string'}
+			,buyer_mk_public:{presence:true,type:'string'}
+			,buyer_pgp_public:{presence:true,type:'string'}
+			,vendor_name:{presence:true,type:'string'}
+			,vendor_mk_public:{presence:true,type:'string'}
+			,vendor_pgp_public:{presence:true,type:'string'}
+			,products:{presence:true,type:'array'}
+			,index:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true}}
+			,epoch:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true}}
 			,message:{presence:true}
 		},productConstraints = {
-			name:{presence:true}
-			,price:{presence:true,numericality:{noStrings:true,greaterThan:0}}
-			,quantity:{presence:true,numericality:{noStrings:true,greaterThanOrEqualTo:0}}
+			name:{presence:true,type:'string'}
+			,price:{presence:true,numericality:{greaterThan:0,onlyInteger:true},type:'string'}
+			,quantity:{presence:true,numericality:{greaterThanOrEqualTo:0,onlyInteger:true},type:'string'}
 		}
 
-		var orderValidation = validate(orderData,orderConstraints)
-
-		if(orderValidation)
-			throw orderValidation[Object.keys(orderValidation)[0]][0]
+		check(orderData,orderConstraints)
 
 		var total = 0
-		orderData.products.forEach(function(product){
-			var productValidation = validate(orderData,orderConstraints)
-			total+=(product.price*product.quantity)
 
-			if(productValidation)
-				throw productValidation[Object.keys(productValidation)[0]][0]
+		orderData.products.forEach(function(product){
+			check(product,productConstraints)
+			total+=(product.price*product.quantity)
 		})
 
-		if(!total>0)
+		if(total<=0)
 			throw 'Order total should be greater than 0'
 
 		this.data = orderData
-		this.total = total
+		this.total = convert(total,{from:'satoshi',to:'btc'})
 		this.setDerivationPath() 
 		this.setAddress() 
 
@@ -49,13 +44,10 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl){
 			this.receipt = receipt
 		else
 			this.receiptPromise = $q(function(resolve,reject){
-				console.log('receiptPromise')
 				pgp.getEncryptPromise([orderData.buyer_pgp_public],orderDataJson).then(function(pgpMessage){
-					console.log(pgpMessage)
 					order.receipt = '<receipt>'+btoa(pgpMessage)+'</receipt>'
 					resolve(order.receipt)
 				}).catch(function(error){
-					console.log(error)
 					reject(error)
 				})
 			})
@@ -82,16 +74,22 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl){
 		this.derivationPath = ['m',1337,this.data.index,this.data.epoch].join('/')
 	}
 
-
-
 	Order.fromReceiptPromise = function(receipt){
 		return $q(function(resolve,reject){
+			var settings = storage.get('settings')
+
 			pgp.getDecryptPromise(
-					storage.data.settings.pgp_private
-					,storage.data.settings.pgp_passphrase
+					settings.pgp_private
+					,settings.pgp_passphrase
 					,atob(receipt.replace('<receipt>','').replace('</receipt>',''))
 				).then(function(orderDataJson){
-					resolve(new Order(JSON.parse(orderDataJson),receipt))
+					try{
+						var orderData = JSON.parse(orderDataJson)
+							,order = new Order(orderData,receipt)
+					}catch(error){
+						throw reject(error)
+					}
+					resolve(order)
 				},function(error){
 					reject(error)
 				})
@@ -103,7 +101,6 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl){
 		var order = this
 		return $q(function(resolve,reject){
 			blockchain.getAddressPromise(order.address).then(function(response){
-				console.log(response)
 				order.received = response.total_received / Math.pow(10,8)
 				order.balance = response.final_balance / Math.pow(10,8)
 				order.status = response.received >= order.data.total ? 'paid' : 'unpaid'

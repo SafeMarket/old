@@ -1,5 +1,5 @@
 app.controller('SettingsController',function($scope,storage,$timeout,ticker,growl){
-	$scope.settings = storage.data.settings
+	$scope.settings = storage.get('settings')
 	$scope.currencies = Object.keys(ticker.rates)
 
 	$scope.$on('ticker.rates',function($event,rates){
@@ -11,8 +11,7 @@ app.controller('SettingsController',function($scope,storage,$timeout,ticker,grow
 		if(!$scope.settingsForm.$valid)
 			return growl.addErrorMessage('Save failed')
 
-		storage.data.settings = $scope.settings
-		storage.save()
+		storage.save('settings',$scope.settings)
 		growl.addSuccessMessage('Settings saved')
 	}
 

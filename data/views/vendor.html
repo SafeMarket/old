@@ -3,11 +3,13 @@
 </head>
 <body ng-app="app">
   <div ng-controller="VendorController" class="container">
+  {{totals}}
     <div ng-show="!vendor" class="alert alert-danger text-center" style="margin-top:15px">
       {{error}}
     </div>
     <div ng-show="!!vendor">
       <h1>{{vendor.name}}</h1>
+      totals:{{totals}}
       <table class="table" style="">
         <tr ng-repeat="product in vendor.products">
           <td>{{product.name}}</td>
@@ -15,10 +17,10 @@
           <td><input type="number" min="0" ng-model="product.quantity" class="form-control"></td>
         </tr>
         <tr>
-          <td></td><td></td><td>{{totals.vendor_currency | number:6}} {{vendor.currency}}</td>
+          <td></td><td></td><td>{{totals.vendor_currency}} {{vendor.currency}}</td>
         </tr>
         <tr>
-          <td></td><td></td><td>{{totals.btc | number:6}} BTC</td>
+          <td></td><td></td><td>{{totals.btc}} BTC</td>
         </tr>
         <tr>
           <td colspan="2">

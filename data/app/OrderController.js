@@ -8,7 +8,6 @@ angular.module('app').controller('OrderController',function($scope,Order,growl){
 		
 		try{
 			Order.fromReceiptPromise(receipt).then(function(order){
-				console.log(order)
 				$scope.order = order
 			},function(error){
 				growl.addErrorMessage(error)
