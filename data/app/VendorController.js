@@ -12,11 +12,19 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 		
 	})
 
+	$scope.$on('manifest',function(event,manifest){
+		$scope.manifest = manifest
+	})
+
+	$scope.total = 0
+
+	/*
 	$scope.totals = {
 		vendor_currency:0
 		,my_currency:0
 		,btc:0
 	}
+	*/
 
 	if(self.port)
 		self.port.on('show',function onShow(options){
@@ -38,24 +46,14 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 			return
 		}
 
-		$scope.totals = {
-			vendor_currency:$scope.vendor.getTotal()
-			,btc:$scope.vendor.getTotal('BTC')
-			,my_currency:$scope.vendor.getTotal(storage.get('settings').currency)
-		}
+		$scope.total = $scope.vendor.getTotal()
 
-		console.log($scope.totals)
 	},true)
 
 	$scope.checkout = function(){
-		try{
-			$scope.vendor.getReceiptPromise($scope.message).then(function(receipt){
-				$rootScope.$broadcast('receipt',receipt)
-			})
-		}catch(error){
-			growl.addErrorMessage('Checkout failed')
-			growl.addErrorMessage(error)
-		}
+		$scope.vendor.getReceiptPromise($scope.message).then(function(receipt){
+			$rootScope.$broadcast('receipt',receipt)
+		})
 	}
 
 })

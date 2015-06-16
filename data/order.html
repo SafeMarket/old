@@ -3,40 +3,69 @@
 	<table class="table">
 	    <tr>
 	    	<td>Receipt</td>
-	    	<td><input ng-model="receipt" class="form-control"></td>
+	    	<td colspan="2"><input ng-model="receipt" class="form-control"></td>
 	    </tr>
-	  	<tbody ng-if="order" class="table">
+	    <tbody ng-if="order">
+	    	<tr ng-repeat="product in order.data.products">
+	    		<td><span ng-if="$index===0">Products</span></td>
+	  			<td>{{product.name}} x {{product.quantity}}</td>
+	  			<td>{{product.price | convert:'BTC':currency}} {{currency}} per unit</td>
+	  		</tr>
+	    </tbody>
+	    <tbody ng-if="order" class="table">
 	  		<tr>
-		  		<td>When</td>
-		  		<td>{{order.data.epoch*1000 | timeAgo}}</td>
+		  		<td>Order Created</td>
+		  		<td colspan="2">{{order.data.epoch*1000 | timeAgo}}</td>
+	  		</tr>
+	  		<tr>
+		  		<td>Order Updated</td>
+		  		<td>{{order.updated | timeAgo}}</td>
+		  		<td><a ng-click="order.update()" class="btn btn-xs btn-primary">Update</a></td>
 	  		</tr>
 	  		<tr>
 		  		<td>Derivation Path</td>
-		  		<td><code>{{order.derivationPath}}</code></td>
+		  		<td colspan="2"><code>{{order.derivationPath}}</code></td>
 	  		</tr>
 	  		<tr>
 		  		<td>Address</td>
-		  		<td><code>{{order.address}}</code></td>
+		  		<td colspan="2"><code>{{order.address}}</code></td>
 	  		</tr>
 	  		<tr>
 		  		<td>Status</td>
-		  		<td><code>{{order.status}}</code></td>
+		  		<td>
+		  			{{status}}
+		  		</td>
+		  		<td>
+		  			<span ng-if="order.status==='paid">
+		  				<button ng-click="withdraw()" class="btn btn-primary">Withdraw</button>
+		  				<button ng-click="refund()">Refund</button>
+		  			</span>
+		  		</td>
 	  		</tr>
 	  		<tr>
 		  		<td>Total Requested</td>
-		  		<td>{{order.total}}</td>
+		  		<td colspan="2">
+		  			<span ng-if="currency!=='BTC'">{{order.total | convert:'BTC':currency}} {{currency}},</span>
+		  			{{order.total}} BTC
+		  		</td>
 	  		</tr>
 	  		<tr>
 		  		<td>Total Received</td>
-		  		<td>{{order.received}}</td>
+		  		<td colspan="2">
+		  			<span ng-if="currency!=='BTC'">{{order.received | convert:'BTC':currency}} {{currency}},</span>
+		  			{{order.received}} BTC
+		  		</td>
 	  		</tr>
 	  		<tr>
 		  		<td>Current Balance</td>
-		  		<td>{{order.balance}}</td>
+		  		<td colspan="2">
+		  			<span ng-if="currency!=='BTC'">{{order.balance | convert:'BTC':currency}} {{currency}},</span>
+		  			{{order.balance}} BTC
+		  		</td>
 	  		</tr>
 	  		<tr>
 		  		<td>Message</td>
-		  		<td>{{order.data.message}}</td>
+		  		<td colspan="2">{{order.data.message}}</td>
 	  		</tr>
 	  	</tbody>
 	</table>

@@ -8,5 +8,8 @@
       Your products are not set
     </div>
   </form>
-  <pre class="pre" style="white-space:pre-wrap;" ng-if="manifest">{{manifest}}</pre>
+  <div ng-if="manifest">
+    <pre class="pre" style="white-space:pre-wrap;" ng-if="manifest">{{manifest}}</pre>
+    <a class="btn btn-primary" ng-click="preview()">Preview</a>
+  </div>
 </div>

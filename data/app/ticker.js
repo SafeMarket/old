@@ -21,9 +21,6 @@ app.factory('ticker',function($interval,$http,$rootScope,storage){
 			if(rates['BTC'])
 			rates['satoshi'] = rates['BTC'].times(Math.pow(10,9));
 
-			console.log(rates)
-
-
 			ticker.isSet = true
 			ticker.rates = rates
 			$rootScope.$broadcast('ticker.rates',rates)

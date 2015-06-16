@@ -1,4 +1,4 @@
-angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,check){
+angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,check,convert){
 
 	function Order(orderData,receipt){
 		var products = []
@@ -17,26 +17,40 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			,message:{presence:true}
 		},productConstraints = {
 			name:{presence:true,type:'string'}
-			,price:{presence:true,numericality:{greaterThan:0,onlyInteger:true},type:'string'}
-			,quantity:{presence:true,numericality:{greaterThanOrEqualTo:0,onlyInteger:true},type:'string'}
+			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
+			,quantity:{presence:true,numericality:{greaterThanOrEqualTo:0,onlyInteger:true,noStrings: true},type:'number'}
 		}
 
 		check(orderData,orderConstraints)
 
-		var total = 0
+		var total = new Decimal(0)
 
 		orderData.products.forEach(function(product){
 			check(product,productConstraints)
-			total+=(product.price*product.quantity)
+			var subtotal = (new Decimal(product.price)).times(product.quantity)
+			total = total.plus(subtotal)
 		})
 
-		if(total<=0)
+		if(total.lessThanOrEqualTo(0))
 			throw 'Order total should be greater than 0'
 
 		this.data = orderData
-		this.total = convert(total,{from:'satoshi',to:'btc'})
+		this.total = total.toString()
 		this.setDerivationPath() 
 		this.setAddress() 
+
+		var mk_private = storage.get('settings').mk_private
+			,x = console.log(mk_private)
+			,mk_public = _.bipPrivateToPublic(storage.get('settings').mk_private)
+			,y = console.log(mk_public)
+
+
+		this.isMine = mk_public===this.data.vendor_mk_public
+
+		console.log('isMine',this.isMine)
+
+		if(this.isMine)
+			this.setWif()
 
 		var orderDataJson = JSON.stringify(orderData)
 	
@@ -52,10 +66,14 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 				})
 			})
 
+		this.update()
+	}
+
+	Order.prototype.update = function(){
 		growl.addInfoMessage('Updating order status from blockchain')
-		order.getUpdatePromise(function(order){
+		this.getUpdatePromise().then(function(order){
 			growl.addSuccessMessage('Order updated')
-		},function(error){
+		}).catch(function(error){
 			growl.addErrorMessage(error)
 		})
 	}
@@ -72,6 +90,29 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 	Order.prototype.setDerivationPath = function(){
 		this.derivationPath = ['m',1337,this.data.index,this.data.epoch].join('/')
+	}
+
+	Order.prototype.setWif = function(){
+		console.log('setwif')
+
+		var bip32 = new BIP32(storage.get('settings').mk_private)
+			,child = bip32.derive(this.derivationPath)
+			,privkeyBytes = child.eckey.priv.toByteArrayUnsigned();
+
+		console.log('privkeyBytes',privkeyBytes)
+            
+        while (privkeyBytes.length < 32)
+        	privkeyBytes.unshift(0)
+
+        console.log('privkeyBytes',privkeyBytes)
+       
+       	var bytes = [0].concat(privkeyBytes).concat([1])
+       		,checksum = Crypto.SHA256(Crypto.SHA256(bytes, {asBytes: true}), {asBytes: true}).slice(0, 4)
+
+       	this.wif = Bitcoin.Base58.encode(bytes.concat(checksum))
+
+       	console.log('wif',this.wif)
+
 	}
 
 	Order.fromReceiptPromise = function(receipt){
@@ -99,11 +140,22 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 	Order.prototype.getUpdatePromise = function(){
 		var order = this
+			,satoshiMultiplier = Math.pow(10,8)
+
 		return $q(function(resolve,reject){
 			blockchain.getAddressPromise(order.address).then(function(response){
-				order.received = response.total_received / Math.pow(10,8)
-				order.balance = response.final_balance / Math.pow(10,8)
-				order.status = response.received >= order.data.total ? 'paid' : 'unpaid'
+				order.updated = (new Date).getTime()
+				order.received = _.decimal(response.total_received).div(satoshiMultiplier).toString()
+				order.balance = _.decimal(response.final_balance).div(satoshiMultiplier).toString()
+				order.txs = response.txs
+
+				if(_.decimal(order.received).lessThan(order.total))
+					order.status = 'unpaid'
+				else if(_.decimal(order.balance).lessThan(order.received))
+					order.status = 'complete'
+				else
+					order.status = 'paid'
+
 				resolve(order)
 			},function(error){
 				reject(error)

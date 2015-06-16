@@ -3,7 +3,6 @@ app.controller('ProductsController',function($scope,storage,growl){
 		,settings = storage.get('settings')
 
 	$scope.products = products ? products : [{}]
-	$scope.currency = settings && settings.currency ? settings.currency : 'BTC'
 
 	$scope.save = function(){
 		if(!$scope.productsForm.$valid)

@@ -3,22 +3,26 @@
   <table class="table">
     <tr>
       <td>Manifest</td>
-      <td><input ng-model="manifest" class="form-control"></td>
+      <td colspan="3"><input ng-model="manifest" class="form-control"></td>
     </tr>
-  </table>
-  <div ng-show="!!vendor">
-    <table class="table" style="">
+    <tbody ng-if="!!vendor">
       <tr ng-repeat="product in vendor.data.products">
         <td>{{product.name}}</td>
         <td>{{product.price}} {{vendor.data.currency}}</td>
-        <td>{{product.price}} {{settings.currency}}</td>
+        <td>
+          <span ng-if="vendor.data.currency!==settings.currency">
+            {{product.price | convert:vendor.data.currency:currency}} {{currency}}
+          </span>
+        </td>
         <td><input type="number" min="0" ng-model="product.quantity" class="form-control"></td>
       </tr>
       <tr>
-        <td></td><td></td><td></td><td>{{totals.vendor_currency | number:6}} {{vendor.data.currency}}</td>
+        <td></td><td></td><td></td><td>{{total | convert:vendor.data.currency:currency}} {{currency}}</td>
       </tr>
       <tr>
-        <td></td><td></td><td></td><td>{{totals.btc | number:6}} BTC</td>
+        <td></td><td></td><td></td><td>
+          <span ng-if="currency!=='BTC'">{{total | convert:vendor.data.currency:'BTC'}} BTC </span>
+        </td>
       </tr>
       <tr>
         <td colspan="2">
@@ -26,7 +30,7 @@
           <p class="text-muted">We'll use the vendor's PGP key to automatically encrypt your message.</p>
         </td>
         <td colspan="2">
-          <textarea class="form-control" ng-model="message" required></textarea>
+          <textarea class="form-control" ng-model="$parent.message" required></textarea>
         </td>
       </tr>
       <tr>
@@ -39,6 +43,6 @@
         <td colspan="3"></td>
         <td><button class="btn btn-primary" ng-click="checkout()">Generate Receipt</button></td>
       </tr>
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>

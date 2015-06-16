@@ -1,4 +1,4 @@
-angular.module('app').controller('ManifestController',function($scope,storage,Vendor,ticker){
+angular.module('app').controller('ManifestController',function($scope,$rootScope,storage,Vendor,ticker){
 	
 	function updateManifest(){
 		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
@@ -21,6 +21,11 @@ angular.module('app').controller('ManifestController',function($scope,storage,Ve
 	$scope.$on('storage.save',function(){
 		updateManifest()
 	})
+
+	$scope.preview = function(){
+		if(!$scope.manifest) throw 'Manifest not set'
+		$rootScope.$broadcast('manifest',$scope.manifest)
+	}
 
 
 	if(ticker.isSet)

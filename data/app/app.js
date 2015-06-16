@@ -3,10 +3,9 @@ var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-
 if(self.port)
   self.port.on('load',function(data){
     data = typeof data==='object'? data:{}
-
     localStorage.setItem('app',JSON.stringify(data))
     angular.bootstrap(document, ['app']);
-  })
+})
 
 
 app.config(function(growlProvider,$provide) {
@@ -19,12 +18,33 @@ app.run(function($rootScope,ticker){
 	//force ticker to start
 })
 
+app.filter('convert',function(convert){
+  return function (price,currency_from,currency_to){
+    price = convert(price,{from:currency_from,to:currency_to})
+    return _.formatPrice(price,currency_to)
+  }
+})
+
+
 _.json64 = {
 	encode:function(object){
 		return btoa(JSON.stringify(object))
 	},decode:function(string){
 		return JSON.parse(atob(string))
 	}
+}
+
+_.decimal = function(input){
+  return new Decimal(input)
+}
+
+_.formatPrice = function(price,currency){
+  
+  var places = currency==='BTC' ? 6 : 2
+
+  price = new Decimal(price)
+
+  return price.toFixed(places)
 }
 
 _.doKeysMatch = function(a, b) {
@@ -37,6 +57,21 @@ _.bipPrivateToPublic = function(privateKey){
   return (new BIP32(privateKey)).extended_public_key_string()
 }
 
+_.parseBase58Check = function(address) {
+  var bytes = Bitcoin.Base58.decode(address);
+  var end = bytes.length - 4;
+  var hash = bytes.slice(0, end);
+  var checksum = Crypto.SHA256(Crypto.SHA256(hash, {asBytes: true}), {asBytes: true});
+  if (checksum[0] != bytes[end] ||
+      checksum[1] != bytes[end+1] ||
+      checksum[2] != bytes[end+2] ||
+      checksum[3] != bytes[end+3])
+          throw new Error("Wrong checksum");
+  var version = hash.shift();
+  return [version, hash];
+}
+
+/*
 app.directive('price', function() {
   return {
     require: 'ngModel',
@@ -117,6 +152,7 @@ app.directive('pgpPrivate', function() {
   };
 });
 
+*/
 
 validate.validators.type = function(value, options, key, attributes) {
   if(options==='array')

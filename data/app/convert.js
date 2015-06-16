@@ -1,29 +1,33 @@
-app.factory('convert',function(ticker,check){
+app.factory('convert',function(ticker,check,growl){
 	return function(amount,currencies){
+		if(!amount) return
+
 		if(currencies.from == currencies.to)
 			return amount
-
-		if(!ticker.rates.hasOwnProperty(currencies.from) || !ticker.rates.hasOwnProperty(currencies.to))
-			throw 'Invalid currency'
 
 		if(typeof amount!=='string')
 			amount = amount.toString()
 
 		check({
 			amount:amount
+			,currency_from:currencies.from
+			,currency_to:currencies.to
 		},{
 			amount:{presence:true,type:'string',numericality:{}}
+			,currency_from:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
+			,currency_to:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 		})
 
 		amount = new Decimal(amount)
-		console.log('amount',amount)
 
 		var amount_btc = amount.div(ticker.rates[currencies.from])
-			,x =  console.log('amount_btc',amount_btc)
-			,amount_final =  (new Decimal(amount_btc)).times(ticker.rates[currencies.to])
+			,amount_final = (new Decimal(amount_btc)).times(ticker.rates[currencies.to])
 	
-		console.log('amount_final',amount_final)
+		if(currencies.to==='BTC')
+			var places = 6
+		else
+			var places = 2
 
-		return amount_final
+		return (new Decimal(amount_final)).toFixed(places)
 	}
 })

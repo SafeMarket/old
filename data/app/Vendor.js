@@ -31,24 +31,16 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 
 	}
 
-	Vendor.prototype.getTotal = function(currency){
+	Vendor.prototype.getTotal = function(){
 
 		var total = new Decimal(0)
 
 		this.data.products.forEach(function(product){
 			var subTotal = (new Decimal(product.quantity)).times(product.price)
-			console.log(subTotal)
 			total = total.plus(subTotal)
-			console.log(total)
 		})
 
-		if(!currency)
-			return total
-		else
-			return convert(total,{
-				from:this.data.currency
-				,to:currency
-			},ticker.rates)
+		return _.formatPrice(total,this.data.currency)
 	}
 
 	Vendor.prototype.getReceiptPromise = function(message){
@@ -57,11 +49,11 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 			,vendor = this
 
 		this.data.products.forEach(function(product){
-			if(product.quantity==0) return true
+			if(product.quantity===0) return true
 		
 			products.push({
 				name:product.name
-				,price:''+convert(product.price,{from:vendor.data.currency,to:'satoshi'})
+				,price:convert(product.price,{from:vendor.data.currency,to:'BTC'})
 				,quantity:product.quantity
 			})
 		})
