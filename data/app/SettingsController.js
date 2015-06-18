@@ -11,7 +11,7 @@ app.controller('SettingsController',function($scope,storage,$timeout,ticker,grow
 		if(!$scope.settingsForm.$valid)
 			return growl.addErrorMessage('Save failed')
 
-		check($scope.settings,{
+		check.constraints($scope.settings,{
 			name:{presence:true,type:'string'}
 			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 			,address:{presence:true,type:'string'}

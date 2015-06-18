@@ -8,14 +8,14 @@ app.controller('ProductsController',function($scope,storage,growl,check){
 		if(!$scope.productsForm.$valid)
 			return growl.addErrorMessage('Save failed')
 
-		check({
+		check.constraints({
 			products:$scope.products
 		},{
 			products:{presence:true,type:'array'}
 		})
 
 		$scope.products.forEach(function(product){
-			check(product,{
+			check.constraints(product,{
 				name:{presence:true,type:'string'}
 				,price:{presence:true,type:'string',numericality:{greaterThan:0}}
 			})

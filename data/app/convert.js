@@ -6,7 +6,7 @@ app.factory('convert',function(ticker,check,growl){
 		if(typeof amount!=='string')
 			amount = amount.toString()
 
-		check({
+		check.constraints({
 			amount:amount
 			,currency_from:currencies.from
 			,currency_to:currencies.to

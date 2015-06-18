@@ -1,6 +1,8 @@
 app.factory('check',function(growl){
 
-	return function(data,constraints){
+	var check = {}
+
+	check.constraints = function(data,constraints){
 		
 		var dataKeys = Object.keys(data)
 		    ,constraintKeys = Object.keys(constraints)
@@ -26,4 +28,24 @@ app.factory('check',function(growl){
 	    throw error
 	}
 
+	check.signature = function(message,address,signature){
+
+		try{
+			var isValid = bitcoin.bitcoin.Message.verify(address, signature, message)
+		}catch(error){
+			growl.addErrorMessage('Invalid signature')
+			throw 'Invalid signature'
+		}
+
+		if(isValid!==true){
+			growl.addErrorMessage('Invalid signature')
+			throw 'Invalid signature'
+		}
+
+		growl.addSuccessMessage('Signature validated')
+
+	}
+
+
+	return check
 })

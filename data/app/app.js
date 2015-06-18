@@ -61,6 +61,47 @@ _.bipPrivateToPublic = function(privateKey){
   return (new BIP32(privateKey)).extended_public_key_string()
 }
 
+_.bipToWif = function(bip){
+  privkeyBytes = bip.eckey.priv.toByteArrayUnsigned()
+
+  while (privkeyBytes.length < 32)
+    privkeyBytes.unshift(0)
+ 
+  var bytes = [0].concat(privkeyBytes).concat([1])
+    ,checksum = Crypto.SHA256(Crypto.SHA256(bytes, {asBytes: true}), {asBytes: true}).slice(0, 4)
+
+  return Bitcoin.Base58.encode(bytes.concat(checksum))
+}
+
+_.keyToAddress = function(key){
+  var bip = new BIP32(key)
+    ,hash160 = bip.eckey.pubKeyHash
+
+  return (new Bitcoin.Address(hash160)).toString()
+}
+
+_.getWif = function(mk_private){
+  var bip = new BIP32(mk_private)
+  return _.bipToWif(bip)
+}
+
+_.getSignature = function(message,mk_private){
+  return _.signWithWif(message,_.getWif(mk_private))
+}
+
+_.signWithWif = function(message,wif){
+  var key = bitcoin.bitcoin.ECKey.fromWIF(wif)
+    ,signature = bitcoin.bitcoin.Message.sign(key, message)
+
+    console.log('signature',signature)
+
+    signature = signature.toString('base64')
+    console.log('signature2',signature)
+
+    return signature
+
+}
+
 _.parseBase58Check = function(address) {
   var bytes = Bitcoin.Base58.decode(address);
   var end = bytes.length - 4;

@@ -1,7 +1,7 @@
 app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 
 
-	function Vendor(vendorData){
+	function Vendor(vendorData,manifest){
 
 		var vendorConstraints = {
 			name:{presence:true,type:'string'}
@@ -15,14 +15,14 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
 		}
 
-		check(vendorData,vendorConstraints)
+		check.constraints(vendorData,vendorConstraints)
 
 		vendorData.products.forEach(function(product){
-			check(product,productConstraints)
+			check.constraints(product,productConstraints)
 		})
 
 		this.data = vendorData
-		this.manifest = '<manifest>'+btoa(JSON.stringify(this.data))+'</manifest>'
+		this.manifest = manifest ? manifest : null
 
 		this.data.products.forEach(function(product){
 			product.quantity = 0
@@ -30,6 +30,17 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 
 		this.key = openpgp.key.readArmored(this.data.pgp_public)
 
+	}
+
+	Vendor.prototype.getMyManifest = function(){
+
+		var data64 = btoa(JSON.stringify(this.data))
+			,signature = _.getSignature(data64,storage.get('settings').mk_private)
+
+		return '<manifest>'+btoa(JSON.stringify({
+			data64:data64
+			,signature:signature
+		}))+'</manifest>'
 	}
 
 	Vendor.prototype.getTotal = function(){
@@ -81,10 +92,11 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 
 	Vendor.fromManifest = function(manifest){
 
-		var vendorData = _.json64.decode(manifest.replace('<manifest>','').replace('</manifest>',''))
+		var manifestData = _.json64.decode(manifest.replace('<manifest>','').replace('</manifest>',''))
+			,vendorData = _.json64.decode(manifestData.data64)
+			,address = _.keyToAddress(vendorData.mk_public)
 
-		if(!vendorData)
-			throw 'Invalid manifest'
+		check.signature(manifestData.data64,address,manifestData.signature)
 
 		return new Vendor(vendorData)
 	}

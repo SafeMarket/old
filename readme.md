@@ -41,7 +41,7 @@ A manifest is a textual representation of a vendor. It conveys to the SafeTrade 
 
 ### Receipt
 
-A reciept is a textual representaiton of an order. It conveys to the SafeTrade software information like the products being ordered and the prices of those products. It can also be used against the bitcoin blockchain to verify the status of a particular order.
+A reciept is a textual representaiton of an order. It conveys to the SafeTrade software information like the products being ordered and the prices of those products. It can also be used against the bitcoin blockchain to verify the status of a particular order. Receipts are encrypted in such a way that only the buyer and vendor can decode them.
 
 
 ##Security and Privacy

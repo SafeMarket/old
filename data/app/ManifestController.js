@@ -11,7 +11,7 @@ angular.module('app').controller('ManifestController',function($scope,$rootScope
 		vendorData.mk_public = _.bipPrivateToPublic(vendorData.mk_private)
 		vendorData.products = storage.get('products')
 
-		$scope.manifest = (new Vendor(vendorData)).manifest
+		$scope.manifest = (new Vendor(vendorData)).getMyManifest()
 	}
 
 	$scope.$on('ticker.rates',function(){

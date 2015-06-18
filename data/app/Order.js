@@ -6,7 +6,6 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 		var orderConstraints = {
 			buyer_name:{presence:true,type:'string'}
-			,buyer_mk_public:{presence:true,type:'string',startsWith:'xpub'}
 			,buyer_pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
 			,buyer_address:{presence:true,type:'string'}
 			,vendor_name:{presence:true,type:'string'}
@@ -22,19 +21,19 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			,quantity:{presence:true,numericality:{greaterThanOrEqualTo:0,onlyInteger:true,noStrings: true},type:'number'}
 		}
 
-		check(orderData,orderConstraints)
+		check.constraints(orderData,orderConstraints)
 
 		var total = new Decimal(0)
 
 		orderData.products.forEach(function(product){
-			check(product,productConstraints)
+			check.constraints(product,productConstraints)
 			var subtotal = (new Decimal(product.price)).times(product.quantity)
 			total = total.plus(subtotal)
 		})
 
 		total = total.toString()
 
-		check({total:total},{total:{presence:true,type:'string',numericality:{greaterThan:0}}})
+		check.constraints({total:total},{total:{presence:true,type:'string',numericality:{greaterThan:0}}})
 
 		this.data = orderData
 		this.height = null
@@ -99,15 +98,8 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 		var bip32 = new BIP32(storage.get('settings').mk_private)
 			,child = bip32.derive(this.derivationPath)
-			,privkeyBytes = child.eckey.priv.toByteArrayUnsigned();
-            
-        while (privkeyBytes.length < 32)
-        	privkeyBytes.unshift(0)
-       
-       	var bytes = [0].concat(privkeyBytes).concat([1])
-       		,checksum = Crypto.SHA256(Crypto.SHA256(bytes, {asBytes: true}), {asBytes: true}).slice(0, 4)
 
-       	this.wif = Bitcoin.Base58.encode(bytes.concat(checksum))
+		this.wif = _.bipToWif(child)
 
 	}
 
@@ -237,9 +229,8 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 		var bip32 = new BIP32(this.data.vendor_mk_public)
 			,child = bip32.derive(this.derivationPath)
-			,hash160 = child.eckey.pubKeyHash
 
-		this.address =  (new Bitcoin.Address(hash160)).toString()
+		this.address = _.keyToAddress(child.extended_public_key_string())
 	}
 
 	return Order

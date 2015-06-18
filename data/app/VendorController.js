@@ -3,12 +3,8 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 	$scope.$watch('manifest',function(manifest){
 		if(!manifest) return
 
-		try{
-			$scope.vendor = Vendor.fromManifest(manifest)
-			growl.addSuccessMessage('Manifest loaded')
-		}catch(error){
-			growl.addErrorMessage('Invalid manifest')
-		}
+		$scope.vendor = Vendor.fromManifest(manifest)
+		growl.addSuccessMessage('Manifest loaded')
 		
 	})
 
