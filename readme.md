@@ -1,3 +1,5 @@
+#SafeTrade
+
 SafeTrade is a bitcoin powered Firefox/TorBrowser add-on that allows users to engage in secure, trustless transactions.
 
 * [Who Is SafeTrade For?](#who-is-safetrade-for)
