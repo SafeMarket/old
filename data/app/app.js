@@ -200,6 +200,8 @@ app.directive('pgpPrivate', function() {
 */
 
 validate.validators.type = function(value, options, key, attributes) {
+  if(value === null || value === undefined) return null
+
   if(options==='array')
     return typeof Array.isArray(value) ? null : 'is not an array'
 

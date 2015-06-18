@@ -19,6 +19,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			name:{presence:true,type:'string'}
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
 			,quantity:{presence:true,numericality:{greaterThanOrEqualTo:0,onlyInteger:true,noStrings: true},type:'number'}
+			,image_url:{type:'string'}
 		}
 
 		check.constraints(orderData,orderConstraints)

@@ -13,6 +13,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 		},productConstraints = {
 			name:{presence:true,type:'string'}
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
+			,image_url:{type:'string'}
 		}
 
 		check.constraints(vendorData,vendorConstraints)
@@ -67,6 +68,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 				name:product.name
 				,price:convert(product.price,{from:vendor.data.currency,to:'BTC'})
 				,quantity:product.quantity
+				,image_url:product.image_url
 			})
 		})
 	

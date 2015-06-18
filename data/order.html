@@ -8,7 +8,7 @@
 	    <tbody ng-if="order">
 	    	<tr ng-repeat="product in order.data.products">
 	    		<td><span ng-if="$index===0">Products</span></td>
-	  			<td>{{product.name}} x {{product.quantity}}</td>
+	  			<td><img ng-if="product.image_url" ng-src="{{product.image_url}}" class="product-image"> {{product.name}} x {{product.quantity}}</td>
 	  			<td>{{product.price | convert:'BTC':currency}} {{currency}} per unit</td>
 	  		</tr>
 	    </tbody>
@@ -21,6 +21,10 @@
 		  		<td>Order Updated</td>
 		  		<td>{{order.updated | timeAgo}}</td>
 		  		<td><a ng-click="order.update()" class="btn btn-xs btn-primary">Update</a></td>
+	  		</tr>
+	  		<tr>
+		  		<td>Address</td>
+		  		<td colspan="2">{{order.address}}</td>
 	  		</tr>
 	  		<tr>
 		  		<td>Status</td>
@@ -75,10 +79,6 @@
 	  		<tr>
 		  		<td>Derivation Path</td>
 		  		<td colspan="2"><code>{{order.derivationPath}}</code></td>
-	  		</tr>
-	  		<tr>
-		  		<td>Address</td>
-		  		<td colspan="2"><code>{{order.address}}</code></td>
 	  		</tr>
 	  		<tr>
 		  		<td>Order Data</td>

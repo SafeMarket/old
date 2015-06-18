@@ -15,11 +15,15 @@ app.controller('ProductsController',function($scope,storage,growl,check){
 		})
 
 		$scope.products.forEach(function(product){
+			console.log(product.image_url)
 			check.constraints(product,{
 				name:{presence:true,type:'string'}
 				,price:{presence:true,type:'string',numericality:{greaterThan:0}}
+				,image_url:{type:'string'}
 			})
 		})
+
+		console.log($scope.products)
 
 		storage.save('products',$scope.products)
 		growl.addSuccessMessage('Products saved')
