@@ -36,6 +36,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 		check.constraints({total:total},{total:{presence:true,type:'string',numericality:{greaterThan:0}}})
 
 		this.data = orderData
+		this.dataJson = JSON.stringify(orderData,null,'    ')
 		this.height = null
 		this.total = total.toString()
 		this.setDerivationPath() 

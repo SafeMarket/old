@@ -23,14 +23,6 @@
 		  		<td><a ng-click="order.update()" class="btn btn-xs btn-primary">Update</a></td>
 	  		</tr>
 	  		<tr>
-		  		<td>Derivation Path</td>
-		  		<td colspan="2"><code>{{order.derivationPath}}</code></td>
-	  		</tr>
-	  		<tr>
-		  		<td>Address</td>
-		  		<td colspan="2"><code>{{order.address}}</code></td>
-	  		</tr>
-	  		<tr>
 		  		<td>Status</td>
 		  		<td>
 		  			{{order.status}}
@@ -74,6 +66,23 @@
 	  		<tr>
 		  		<td>Message</td>
 		  		<td colspan="2">{{order.data.message}}</td>
+	  		</tr>
+	  		<tr>
+	  			<td colspan="3"><label>Show Details <input type="checkbox" ng-model="$parent.isExpanded"></label></td>
+	  		</tr>
+	  	</tbody>
+	  	<tbody ng-if="order && isExpanded">
+	  		<tr>
+		  		<td>Derivation Path</td>
+		  		<td colspan="2"><code>{{order.derivationPath}}</code></td>
+	  		</tr>
+	  		<tr>
+		  		<td>Address</td>
+		  		<td colspan="2"><code>{{order.address}}</code></td>
+	  		</tr>
+	  		<tr>
+		  		<td>Order Data</td>
+		  		<td colspan="2"><pre>{{order.dataJson}}</pre></td>
 	  		</tr>
 	  	</tbody>
 	</table>
