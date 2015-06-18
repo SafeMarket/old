@@ -1,3 +1,4 @@
 data/components/
 data/browserified/
 profile/
+node_modules
