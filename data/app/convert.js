@@ -1,7 +1,5 @@
 app.factory('convert',function(ticker,check,growl){
 	return function(amount,currencies){
-		if(!amount) return
-
 		if(currencies.from == currencies.to)
 			return amount
 

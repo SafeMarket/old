@@ -6,15 +6,16 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 		var orderConstraints = {
 			buyer_name:{presence:true,type:'string'}
-			,buyer_mk_public:{presence:true,type:'string'}
-			,buyer_pgp_public:{presence:true,type:'string'}
+			,buyer_mk_public:{presence:true,type:'string',startsWith:'xpub'}
+			,buyer_pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
+			,buyer_address:{presence:true,type:'string'}
 			,vendor_name:{presence:true,type:'string'}
-			,vendor_mk_public:{presence:true,type:'string'}
-			,vendor_pgp_public:{presence:true,type:'string'}
+			,vendor_mk_public:{presence:true,type:'string',startsWith:'xpub'}
+			,vendor_pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
 			,products:{presence:true,type:'array'}
-			,index:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true}}
-			,epoch:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true}}
-			,message:{presence:true}
+			,index:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true},type:'number'}
+			,epoch:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true},type:'number'}
+			,message:{presence:true,type:'string'}
 		},productConstraints = {
 			name:{presence:true,type:'string'}
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
@@ -31,23 +32,21 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			total = total.plus(subtotal)
 		})
 
-		if(total.lessThanOrEqualTo(0))
-			throw 'Order total should be greater than 0'
+		total = total.toString()
+
+		check({total:total},{total:{presence:true,type:'string',numericality:{greaterThan:0}}})
 
 		this.data = orderData
+		this.height = null
 		this.total = total.toString()
 		this.setDerivationPath() 
 		this.setAddress() 
 
 		var mk_private = storage.get('settings').mk_private
-			,x = console.log(mk_private)
 			,mk_public = _.bipPrivateToPublic(storage.get('settings').mk_private)
-			,y = console.log(mk_public)
 
 
 		this.isMine = mk_public===this.data.vendor_mk_public
-
-		console.log('isMine',this.isMine)
 
 		if(this.isMine)
 			this.setWif()
@@ -65,6 +64,10 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 					reject(error)
 				})
 			})
+
+		this.updated = 0
+		this.received = 0
+		this.balance = 0
 
 		this.update()
 	}
@@ -93,26 +96,81 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 	}
 
 	Order.prototype.setWif = function(){
-		console.log('setwif')
 
 		var bip32 = new BIP32(storage.get('settings').mk_private)
 			,child = bip32.derive(this.derivationPath)
 			,privkeyBytes = child.eckey.priv.toByteArrayUnsigned();
-
-		console.log('privkeyBytes',privkeyBytes)
             
         while (privkeyBytes.length < 32)
         	privkeyBytes.unshift(0)
-
-        console.log('privkeyBytes',privkeyBytes)
        
        	var bytes = [0].concat(privkeyBytes).concat([1])
        		,checksum = Crypto.SHA256(Crypto.SHA256(bytes, {asBytes: true}), {asBytes: true}).slice(0, 4)
 
        	this.wif = Bitcoin.Base58.encode(bytes.concat(checksum))
 
-       	console.log('wif',this.wif)
+	}
 
+	Order.prototype.withdraw = function(){
+		var order = this
+		growl.addInfoMessage('Withdrawing...')
+		this
+			.getCashoutPromise(storage.get('settings').address)
+			.then(function(){
+				growl.addSuccessMessage('Withdraw complete')
+				order.update()
+			},function(){
+				growl.addErrorMessage('Something went wrong')	
+			})
+	}
+
+	Order.prototype.setHeight = function(){
+		var order = this
+
+		this.txs.forEach(function(tx){
+			if(!tx.block_height){
+				order.height = null
+				return false
+			}else if(!order.height || tx.block_height>order.height){
+				order.height = tx.block_height
+			}
+		})
+
+		console.log('orderheight',order.height)
+	}
+
+	Order.prototype.refund = function(){
+		var order = this
+		growl.addInfoMessage('Refunding...')
+		this
+			.getCashoutPromise(this.data.buyer_address)
+			.then(function(){
+				growl.addSuccessMessage('Refund complete')
+				order.update()
+			},function(){
+				growl.addErrorMessage('Something went wrong')	
+			})
+	}
+
+	Order.prototype.getCashoutPromise = function(address){
+		var order = this
+			,keyPair = bitcoin.bitcoin.ECKey.fromWIF(this.wif)
+	    	,tx = new bitcoin.bitcoin.TransactionBuilder()
+	    	,total = 0
+
+		this.utxos.forEach(function(utxo) {
+		    tx.addInput(utxo.tx_hash_big_endian, utxo.tx_output_n)
+		    total += utxo.value
+		})
+
+		tx.addOutput(address, total)
+		tx.sign(0, keyPair)
+
+		var txHex = tx.build().toHex()
+
+		console.log(txHex)
+
+		return blockchain.getPushTxPromise(txHex)
 	}
 
 	Order.fromReceiptPromise = function(receipt){
@@ -148,15 +206,25 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 				order.received = _.decimal(response.total_received).div(satoshiMultiplier).toString()
 				order.balance = _.decimal(response.final_balance).div(satoshiMultiplier).toString()
 				order.txs = response.txs
-
-				if(_.decimal(order.received).lessThan(order.total))
+				order.setHeight()
+				
+				if(_.decimal(order.balance).lessThan(order.received))
+					order.status = 'withdrawn/refunded'
+				else if(_.decimal(order.received).lessThan(order.total))
 					order.status = 'unpaid'
-				else if(_.decimal(order.balance).lessThan(order.received))
-					order.status = 'complete'
 				else
 					order.status = 'paid'
 
-				resolve(order)
+				if(_.decimal(order.balance).isZero())
+					resolve(order)
+				else
+					blockchain.getUtxosPromise(order.address).then(function(response){
+						order.utxos = response.unspent_outputs
+						console.log(order.utxos)
+						resolve(order)
+					},function(error){
+						reject(error)
+					})
 			},function(error){
 				reject(error)
 			})

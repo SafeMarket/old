@@ -33,13 +33,21 @@
 	  		<tr>
 		  		<td>Status</td>
 		  		<td>
-		  			{{status}}
+		  			{{order.status}}
 		  		</td>
 		  		<td>
-		  			<span ng-if="order.status==='paid">
-		  				<button ng-click="withdraw()" class="btn btn-primary">Withdraw</button>
-		  				<button ng-click="refund()">Refund</button>
+		  			<span ng-if="order.balance!=='0'">
+		  				<button ng-click="order.withdraw()" class="btn btn-primary btn-xs">Withdraw</button>
+		  				<button ng-click="order.refund()"  class="btn btn-primary btn-xs">Refund</button>
 		  			</span>
+		  		</td>
+	  		</tr>
+	  		<tr>
+		  		<td>Confirmations</td>
+		  		<td>
+		  			{{order.received === '0' ? '-' : (order.height===null ? 0 : height - order.height)}}
+		  		</td>
+		  		<td>
 		  		</td>
 	  		</tr>
 	  		<tr>

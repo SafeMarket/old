@@ -15,7 +15,7 @@ app.factory('pgp',function($q,$timeout,growl){
 					growl.addSuccessMessage('Encryption complete')
 	    			resolve(pgpMessage)
 				}).catch(function(error) {
-					growl.adErrorMessage('Something went wrong')
+					growl.addErrorMessage('Something went wrong')
 				    reject(error)
 				});
 			},1000)
@@ -45,8 +45,8 @@ app.factory('pgp',function($q,$timeout,growl){
 				openpgp.decryptMessage(privateKey, pgpMessage).then(function(plaintext){
 					growl.addSuccessMessage('Decryption complete')
 					resolve(plaintext)
-				}).catch(function(){
-					growl.adErrorMessage('Something went wrong')	
+				}).catch(function(error){
+					growl.addErrorMessage('Something went wrong')	
 					reject(error)
 				})
 			},1000)

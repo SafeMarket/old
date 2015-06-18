@@ -9,6 +9,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 			,products:{presence:true,type:'array'}
 			,mk_public:{presence:true,startsWith:'xpub',type:'string'}
+			,address:{presence:true,type:'string'}
 		},productConstraints = {
 			name:{presence:true,type:'string'}
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
@@ -63,9 +64,11 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 				buyer_name:settings.name
 				,buyer_pgp_public:settings.pgp_public
 				,buyer_mk_public:_.bipPrivateToPublic(settings.mk_private)
+				,buyer_address:settings.address
 				,vendor_name:this.data.name
 				,vendor_mk_public:this.data.mk_public
 				,vendor_pgp_public:this.data.pgp_public
+				,vendor_address:this.data.address
 				,epoch:Order.getCurrentEpoch()
 				,index:Order.getRandomIndex()
 				,products:products

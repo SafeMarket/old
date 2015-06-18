@@ -5,7 +5,11 @@ if(self.port)
     data = typeof data==='object'? data:{}
     localStorage.setItem('app',JSON.stringify(data))
     angular.bootstrap(document, ['app']);
-})
+  })
+else
+   window.onload = function(){
+    angular.bootstrap(document, ['app']);
+  }
 
 
 app.config(function(growlProvider,$provide) {
@@ -39,7 +43,7 @@ _.decimal = function(input){
 }
 
 _.formatPrice = function(price,currency){
-  
+
   var places = currency==='BTC' ? 6 : 2
 
   price = new Decimal(price)
@@ -162,6 +166,10 @@ validate.validators.type = function(value, options, key, attributes) {
 };
 
 validate.validators.startsWith = function(value, options, key, attributes) {
-	return _.startsWith(value,options) ? null : 'does not start with '+options
+	return _.startsWith(value,options) ? null : 'does should start with '+options
+};
+
+validate.validators.endsWith = function(value, options, key, attributes) {
+  return _.endsWith(value,options) ? null : 'does should end with '+options
 };
 

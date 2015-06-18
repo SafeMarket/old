@@ -1,0 +1,75 @@
+<html>
+<head>
+  <title>Trustless</title>
+  <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css"></script>
+  <link rel="stylesheet" href="components/angular-growl/build/angular-growl.min.css"></script>
+  <style>
+    .growl{
+      top:auto;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div ng-controller="AppController">
+    <nav class="navbar navbar-inverse navbar-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-6"></div>
+          <div class="col-xs-6">
+            <select ng-model="page" class="form-control" style="margin-top:6px">
+              <option value="settings">Settings</option>
+              <option value="products">Products</option>
+              <option value="manifest">Manifest</option>
+              <option value="vendor">Vendor</option>
+              <option value="order">Order</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
+      <div ng-show="page==='products'" ng-include="path+'products.html'"></div>
+      <div ng-show="page==='manifest'" ng-include="path+'manifest.html'"></div>
+      <div ng-show="page==='vendor'" ng-include="path+'vendor.html'"></div>
+      <div ng-show="page==='order'" ng-include="path+'order.html'"></div>
+    </div>
+  </div>
+  <div growl limit-messages="3"></div>
+  <script src="components/lodash/lodash.min.js"></script>
+  <script src="components/angular/angular.min.js"></script>
+  <script src="components/angular-bootstrap/ui-bootstrap.min.js"></script>
+  <script src="components/angular-growl/build/angular-growl.min.js"></script>
+  <script src="components/angular-timeago/src/timeAgo.js"></script>
+  <script src="components/xml2json/xml2json.js"></script>
+  <script src="components/decimal.js/decimal.min.js"></script>
+  <script src="components/validate/validate.min.js"></script>
+  <script src="components/openpgp/dist/openpgp.js"></script>
+  <script src="components/bip32.github.io/js/jquery.js"></script>
+  <script src="components/bip32.github.io/js/bitcoinjs-min.js"></script>
+  <script src="components/bip32.github.io/js/modsqrt.js"></script>
+  <script src="components/bip32.github.io/js/sha256.js"></script>
+  <script src="components/bip32.github.io/js/sha512.js"></script>
+  <script src="components/bip32.github.io/js/bip32.js"></script>
+  <script src="components/bip39/src/js/wordlist_english.js"></script>
+  <script src="components/bip39/src/js/wordlist_english.js"></script>
+  <script src="components/bip39/src/js/jsbip39.js"></script>
+  <script src="browserified/bitcoin.js"></script>
+  <script src="app/app.js"></script>
+  <script src="app/storage.js"></script>
+  <script src="app/check.js"></script>
+  <script src="app/pgp.js"></script>
+  <script src="app/ticker.js"></script>
+  <script src="app/convert.js"></script>
+  <script src="app/blockchain.js"></script>
+  <script src="app/Vendor.js"></script>
+  <script src="app/Order.js"></script>
+  <script src="app/AppController.js"></script>
+  <script src="app/SettingsController.js"></script>
+  <script src="app/ProductsController.js"></script>
+  <script src="app/VendorController.js"></script>
+  <script src="app/OrderController.js"></script>
+  <script src="app/ManifestController.js"></script>
+</body>
+</html>

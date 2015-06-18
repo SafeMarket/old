@@ -1,0 +1,27 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/aakilfernandes/.nvm/v0.10.36/bin/node',
+1 verbose cli   '/Users/aakilfernandes/.nvm/v0.10.36/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   'bitcoinjs-lib' ]
+2 info using npm@1.4.28
+3 info using node@v0.10.36
+4 error Error: Invalid version: "0.1"
+4 error     at Object.module.exports.fixVersionField (/Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/read-package-json/node_modules/normalize-package-data/lib/fixer.js:183:13)
+4 error     at /Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/read-package-json/node_modules/normalize-package-data/lib/normalize.js:30:38
+4 error     at Array.forEach (native)
+4 error     at normalize (/Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/read-package-json/node_modules/normalize-package-data/lib/normalize.js:29:15)
+4 error     at final (/Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/read-package-json/read-json.js:342:33)
+4 error     at then (/Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/read-package-json/read-json.js:126:33)
+4 error     at /Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/read-package-json/read-json.js:331:40
+4 error     at evalmachine.<anonymous>:272:14
+4 error     at /Users/aakilfernandes/.nvm/v0.10.36/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:102:5
+4 error     at Object.oncomplete (evalmachine.<anonymous>:108:15)
+5 error If you need help, you may report this *entire* log,
+5 error including the npm and node versions, at:
+5 error     <http://github.com/npm/npm/issues>
+6 error System Darwin 14.3.0
+7 error command "/Users/aakilfernandes/.nvm/v0.10.36/bin/node" "/Users/aakilfernandes/.nvm/v0.10.36/bin/npm" "install" "bitcoinjs-lib"
+8 error cwd /Users/aakilfernandes/projects/trustless/extension
+9 error node -v v0.10.36
+10 error npm -v 1.4.28
+11 verbose exit [ 1, true ]

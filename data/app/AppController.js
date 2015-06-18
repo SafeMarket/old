@@ -1,6 +1,6 @@
-app.controller('AppController',function($scope,storage){
+app.controller('AppController',function($scope,storage,$interval,blockchain){
 	$scope.page = storage.get('page')? storage.get('page') : 'settings'
-	$scope.path = window.location.href.replace('index.html','')
+	$scope.path = self.port ? window.location.href.replace('index.html','') : '/'
 
 	var settings = storage.get('settings')
 
@@ -23,4 +23,14 @@ app.controller('AppController',function($scope,storage){
 	$scope.$on('manifest',function($event,receipt){
 		$scope.page = 'vendor'
 	})
+
+	function updateHeight(){
+		blockchain.getHeightPromise().then(function(height){
+			$scope.height = parseInt(height)
+		})
+	}
+
+	updateHeight()
+
+	$interval(updateHeight,10*60*1000)
 })

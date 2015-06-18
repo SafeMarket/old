@@ -5,6 +5,11 @@ app.factory('check',function(growl){
 		var dataKeys = Object.keys(data)
 		    ,constraintKeys = Object.keys(constraints)
 
+		constraintKeys.forEach(function(key){
+			if(!constraints[key].type)
+				throw key+' must be constrained by type'
+		})
+
 		dataKeys.forEach(function(key){
 		    if(constraintKeys.indexOf(key)===-1)
 			    delete data[key]

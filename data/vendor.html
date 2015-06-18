@@ -10,7 +10,7 @@
         <td>{{product.name}}</td>
         <td>{{product.price}} {{vendor.data.currency}}</td>
         <td>
-          <span ng-if="vendor.data.currency!==settings.currency">
+          <span ng-if="vendor.data.currency!==currency">
             {{product.price | convert:vendor.data.currency:currency}} {{currency}}
           </span>
         </td>

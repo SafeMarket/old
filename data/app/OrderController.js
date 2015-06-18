@@ -1,10 +1,9 @@
 angular.module('app').controller('OrderController',function($scope,$interval,Order,growl){
 
 	$scope.$watch('receipt',function(receipt){
-		if(!receipt) {
-			$scope.order = null
-			return
-		}
+		$scope.order = null
+		
+		if(!receipt) return
 		
 		Order.fromReceiptPromise(receipt).then(function(order){
 			$scope.order = order
