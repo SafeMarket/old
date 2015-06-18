@@ -1,10 +1,11 @@
 SafeTrade is a bitcoin powered Firefox/TorBrowser add-on that allows users to engage in secure, trustless transactions.
 
-* [Who](#who)
-* [Why](#why)
+* [Who Is SafeTrade For?](#who-is-safetrade-for)
+* [Why?](#why)
 * [Buyer Guide](#buyer-guide)
 * [Vendor Guide](#vendor-guide)
 * [Terminology](#terminoloty)
+* [Security and Privacy](#security-and-privacy)
 
 ## Who is SafeTrade for?
 
@@ -18,13 +19,15 @@ Bitcoin users have often been the victim of hacking and scams. The anonymous and
 
 To get started with SafeTrade simply install the firefox/mozilla add-on. Right-click anywhere on the page and select "SafeTrade". Complete your settings and save.
 
-When you see a `manifest` that you'd like to explore, highlight the manifest then right click. In the menu that pops up you should see a `Load Manifest` option. Finish your purchase then send the receipt to the vendor. Your receipt and message are automatically encrypted using PGP, so there's no need to encrypt it again.
+When you see a [manifest](#manifest) that you'd like to explore, highlight the manifest then right click ande select the `Load Manifest` option. Finish your purchase then send the [receipt](#receipt) to the vendor. Your receipt and message are automatically encrypted using PGP, so there's no need to encrypt it again.
 
 ##Vendors Guide 
 
 To get started with SafeTrade simply install the firefox/mozilla add-on. Right-click anywhere on the page and select "SafeTrade". Complete your settings and save. Then head to the Products page and add your products and save.
 
-When you finish, go to the Manifest page. Copy your manifest and paste it wherever buyers might find you.
+When you finish, go to the Manifest page. Copy your [manifest](#manifest) and paste it wherever buyers might find you.
+
+Over time, buyers will send you [receipts](#receipt). Highlight receipts then right click and select `Load Receipt`. Make sure the products/prices are to your satisfaction. If something is wrong, you can refund the order. If you're willing to accept the order, click withdraw. 
 
 ##Terminology
 
