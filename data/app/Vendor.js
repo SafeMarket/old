@@ -9,7 +9,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check){
 			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 			,products:{presence:true,type:'array'}
 			,mk_public:{presence:true,startsWith:'xpub',type:'string'}
-			,address:{presence:true,type:'string'}
 		},productConstraints = {
 			name:{presence:true,type:'string'}
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}

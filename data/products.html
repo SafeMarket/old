@@ -13,12 +13,15 @@
           <td>
             <input ng-model="product.image_url" class="form-control"  placeholder="Image URL (optional)">
           </td>
+          <td>
+          <img ng-if="product.image_url" ng-src="{{product.image_url}}" class="product-image">
+        </td>
           <td style="text-align:right"><a ng-click="deleteProduct($index)" class="btn btn-danger">X</a></td>
         </tr>
       </tbody>
       <tr>
         <td colspan="3"></td>
-        <td style="text-align:right">
+        <td colspan="2" style="text-align:right">
           <a ng-click="products.push({})" class="btn btn-success">+</a>
           <button class="btn btn-primary" ng-if="products && products.length>0">Save</button>
         </td>
