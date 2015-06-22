@@ -17,6 +17,7 @@
     "angular-bootstrap-show-errors": "~2.3.0",
     "angular-timeago": "~0.1.12",
     "decimal.js": "~4.0.2",
-    "bitcoinjs-lib": "git://github.com/bitcoinjs/bitcoinjs-lib.git#~1.5.7"
+    "bitcoinjs-lib": "git://github.com/bitcoinjs/bitcoinjs-lib.git#~1.5.7",
+    "utf8": "~2.0.0"
   }
 }

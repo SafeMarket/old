@@ -93,10 +93,7 @@ _.signWithWif = function(message,wif){
   var key = bitcoin.bitcoin.ECKey.fromWIF(wif)
     ,signature = bitcoin.bitcoin.Message.sign(key, message)
 
-    console.log('signature',signature)
-
     signature = signature.toString('base64')
-    console.log('signature2',signature)
 
     return signature
 

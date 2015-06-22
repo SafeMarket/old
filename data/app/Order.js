@@ -129,8 +129,6 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 				order.height = tx.block_height
 			}
 		})
-
-		console.log('orderheight',order.height)
 	}
 
 	Order.prototype.refund = function(){
@@ -161,8 +159,6 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 		tx.sign(0, keyPair)
 
 		var txHex = tx.build().toHex()
-
-		console.log(txHex)
 
 		return blockchain.getPushTxPromise(txHex)
 	}
@@ -214,7 +210,6 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 				else
 					blockchain.getUtxosPromise(order.address).then(function(response){
 						order.utxos = response.unspent_outputs
-						console.log(order.utxos)
 						resolve(order)
 					},function(error){
 						reject(error)
