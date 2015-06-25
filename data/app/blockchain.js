@@ -88,7 +88,7 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 			wait(function(){
 				$http({
 				    method: 'POST'
-				    ,url: 'https://blockchain.info/pushtx?cors=true'
+				    ,url: getHost()+'pushtx?cors=true'
 				    ,data: $.param({tx:txHex})
 				    ,headers:{
 				        "Content-Type":"application/x-www-form-urlencoded"
