@@ -12,6 +12,7 @@ app.factory('ticker',function($interval,$http,$rootScope,storage){
 	},10*60*1000);
 
 	function updateRates(){
+		console.log('updateRates')
 		$http.get('https://bitpay.com/api/rates').success(function(response){
 			var rates = {}
 			response.forEach(function(currency){

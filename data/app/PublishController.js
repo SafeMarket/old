@@ -11,7 +11,7 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		vendorData.mk_public = _.bipPrivateToPublic(vendorData.mk_private)
 		vendorData.products = storage.get('products')
 
-		$scope.vendor = new Vendor(vendorData)
+		$scope.vendor = new Vendor(vendorData,true)
 	}
 
 	$scope.$on('ticker.rates',function(){

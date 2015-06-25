@@ -1,7 +1,7 @@
 app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockchain){
 
 
-	function Vendor(vendorData,manifest){
+	function Vendor(vendorData,doSetManifests){
 
 		var vendorConstraints = {
 			name:{presence:true,type:'string'}
@@ -23,7 +23,10 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 		this.data = vendorData
 		this.address = _.keyToAddress(this.data.mk_public)
-		this.setMyManifests()
+		
+		if(doSetManifests)
+			this.setMyManifests()
+		
 		this.getUpdatePromise()
 
 		this.data.products.forEach(function(product){
@@ -85,6 +88,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		 		vendor.balance = '0'
 		 		reject()
 		 	}).then(function(){
+		 		if(!vendor.manifests)
+		 			return
 		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifests.length+1).toFixed(6).toString()
 		 		
 		 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)
@@ -201,7 +206,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifestHex = ''
 
 		return $q(function(resolve,reject){
-			growl.addInfoMessage('Downloading blockchain...')
+			growl.addInfoMessage('Downloading blockchain, this may take a minute...')
 			blockchain
 				.getTxsPromise(address)
 				.then(function(txs){

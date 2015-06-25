@@ -44,6 +44,11 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 	},true)
 
 	$scope.checkout = function(){
+		if(!storage.get('settings')){
+			growl.addErrorMessage('You must complete your settings')
+			throw 'settings incomplete'
+		}
+
 		$scope.vendor.getReceiptPromise($scope.message).then(function(receipt){
 			$rootScope.$broadcast('receipt',receipt)
 		})
