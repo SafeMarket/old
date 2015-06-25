@@ -211,7 +211,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				.getTxsPromise(address)
 				.then(function(txs){
 					txs.forEach(function(tx){
-						if(tx.inputs[0].address!==address)
+						console.log(tx)
+						if(tx.inputs[0].prev_out.addr!==address)
 							return true
 
 						if(tx.out.length<2) return true
@@ -246,6 +247,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 					manifests.forEach(function(manifest){
 						manifestHex+=manifest.manifestPartHex
 					})
+
+					console.log(manifestHex)
 
 					var manifestBuffer = new bitcoin.Buffer.Buffer(manifestHex,'hex')
 						,manifestData = msgpack.decode(manifestBuffer.buffer)
