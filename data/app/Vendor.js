@@ -23,7 +23,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 		this.data = vendorData
 		this.address = _.keyToAddress(this.data.mk_public)
-		this.manifest = manifest ? manifest : null
+		this.setMyManifests()
 		this.getUpdatePromise()
 
 		this.data.products.forEach(function(product){
@@ -35,7 +35,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 	}
 
-	Vendor.prototype.setMyManifest = function(){
+	Vendor.prototype.setMyManifests = function(){
 		
 		var products = []
 
@@ -56,21 +56,20 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,k:openpgp.armor.decode(storage.get('settings').pgp_public).data
 		}
 
-		this.manifest = msgpack.pack(data,true)
-		
-		var manifestBuffer = new bitcoin.Buffer.Buffer(this.manifest)
+		console.log(data)
+
+		var manifestArrayBuffer = msgpack.encode(data)
+			,manifestUint8Array = new Uint8Array(manifestArrayBuffer)
+			,manifestBuffer = new bitcoin.Buffer.Buffer(manifestUint8Array)
 			,manifestHex = manifestBuffer.toString('hex')
+
+		console.log(manifestArrayBuffer)
+		console.log(manifestBuffer)
+		console.log(manifestHex)
 		
-		this.manifestParts = manifestHex.match(/.{1,314}/g)
+		this.manifests = manifestHex.match(/.{1,74}/g)
 
-		if(this.manifestParts.length>256){
-	    	growl.addErrorMessage('Message too large')
-	    	throw 'Message too large'
-	    }
-	
-	    this.publishingFeeSatoshi = 1000*this.manifestParts.length
-	    this.publishingFee = convert(this.publishingFeeSatoshi,{from:'satoshi',to:'BTC'})
-
+		
 	}
 
 	Vendor.prototype.getUpdatePromise = function(){
@@ -79,10 +78,9 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		 	blockchain.getUtxosPromise(vendor.address).then(function(response){
 		 		vendor.utxos = response.unspent_outputs
 
-		 		var utxos = response.unspent_outputs
-					,totalSatoshi = 0
+				var totalSatoshi = 0
 
-				utxos.forEach(function(utxo) {
+				vendor.utxos.forEach(function(utxo) {
 				    totalSatoshi += utxo.value
 				})
 
@@ -90,65 +88,70 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 				resolve()
 		 	},function(){
+		 		vendor.utxos = []
 		 		vendor.balance = '0'
 		 		reject()
 		 	}).then(function(){
+		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifests.length+1).toString()
+		 		
 		 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)
-				console.log(shortfall)
-
+				
 				if(shortfall.lessThanOrEqualTo(0))
 					vendor.shortfall = null
 				else
 					vendor.shortfall = shortfall.toString()
-		 	})
-		 })
-	}
 
-	Vendor.prototype.publish = function(){
-		var mk_private = storage.get('settings').mk_private
-			,prefixLength = this.manifestParts.length.toString(16)
-			,prefixLength = prefixLength.length===2 ? prefixLength : '0'+prefixLength
-			,prefixManifest = '6d'
-			,wif = _.getWif(mk_private)
-			,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
-	    	,vendor = this
-	    	,txHexes = []
-	    
-	    this.getUpdatePromise().then(function(response){
+				if(shortfall.greaterThan(0)){
+					return
+				}
+
+				var mk_private = storage.get('settings').mk_private
+					,prefixRandom = ((Math.round(Math.random()*255)).toString(16))
+					,prefixRandom = prefixRandom.length==2?prefixRandom : '0'+prefixRandom
+					,prefixManifest =  '6d'
+					,wif = _.getWif(mk_private)
+					,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
+					,total = 0
+					,lastTxId = null
+
+					console.log(prefixRandom)
+			    	
+			    	vendor.txHexes = []
 	    	
+			    	vendor.manifests.forEach(function(manifest,index){
 
-			if(new Decimal(vendor.balance).lessThan(vendor.publishingFee)){
-				growl.addErrorMessage('Not enough funds. '+vendor.balance+' of '+vendor.publishingFee+' necessary to publish.')
-				throw 'Not enough funds'
-			}
-	    	
-	    	vendor.manifestParts.forEach(function(manifestPart,index){
+						var prefixIndex = index.toString(16)
+							,prefixIndex = prefixIndex.length===2 ? prefixIndex : '0'+prefixIndex
+							,prefix = prefixManifest+prefixRandom+prefixIndex
+							,tx = new bitcoin.bitcoin.TransactionBuilder()
+							,data = new bitcoin.Buffer.Buffer(prefix + manifest,'hex')
+			    			,dataScript = bitcoin.bitcoin.scripts.nullDataOutput(data)
 
-				var prefixIndex = index.toString(16)
-					,prefixIndex = prefixIndex.length===2 ? prefixIndex : '0'+prefixIndex
-					,prefix = prefixManifest+prefixIndex+prefixLength
-					,tx = new bitcoin.bitcoin.TransactionBuilder()
-					,data = new bitcoin.Buffer.Buffer('hello world')
-	    			,dataScript = bitcoin.bitcoin.scripts.nullDataOutput(data)
+			    		if(index===0)
+							vendor.utxos.forEach(function(utxo) {
+							    tx.addInput(utxo.tx_hash_big_endian, utxo.tx_output_n)
+								total+=utxo.value
+							})
+						else
+							tx.addInput(lastTxId, 1)
 
-	    		console.log(dataScript)
+						tx.addOutput(dataScript, 0)
+
+						var change = total-(10000*(index+1))
+						tx.addOutput(vendor.address, change)
+
+						tx.inputs.forEach(function(input,index){
+							tx.sign(index, keyPair)
+						})
 
 
-	    		var total = 0
-				vendor.utxos.forEach(function(utxo) {
-				    tx.addInput(utxo.tx_hash_big_endian, utxo.tx_output_n)
-					total+=utxo.value
-				})
+						var txHex = tx.build().toHex()
+						lastTxId = bitcoin.bitcoin.Transaction.fromHex(txHex).getId()
+						
+						vendor.txHexes.push(txHex)
+					})
+		    })
 
-				tx.addOutput(dataScript, total-10000)
-				tx.inputs.forEach(function(input,index){
-					tx.sign(index, keyPair)
-				})
-
-				var txHex = tx.build().toHex()
-				console.log(txHex)
-				txHexes.push(txHex)
-			})
 	    })
 		
 	}
@@ -201,7 +204,84 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		return order.receiptPromise
 	}
 
-	Vendor.fromManifest = function(manifest){
+	Vendor.getFromXpubkeyPromise = function(xpubkey){
+
+		console.log(xpubkey)
+
+		var address = _.keyToAddress(xpubkey)
+			,manifests = []
+			,random = null
+			,manifestHex = ''
+
+		return $q(function(resolve,reject){
+			blockchain
+				.getTxsPromise(address)
+				.then(function(txs){
+					console.log(txs)
+					txs.forEach(function(tx){
+						if(tx.out.length<2) return true
+
+						var script = tx.out[0].script
+							,buffer = new bitcoin.Buffer.Buffer(script,'hex')
+
+						if(buffer[0]!== 106)
+							return true
+						if(buffer[2]!==109)
+							return true
+
+						if(random!== null && random !== buffer[3])
+							return true
+
+						if(random === null)
+							random = buffer[3]
+
+						manifests.push({
+							script:script
+							,random:buffer[3]
+							,index:buffer[4]
+							,manifestPartHex:buffer.slice(5).toString('hex')
+						})
+
+					})
+
+					manifests.sort(function(a,b){
+						return a.index - b.index
+					})
+
+					console.log(manifests)
+
+					manifests.forEach(function(manifest){
+						manifestHex+=manifest.manifestPartHex
+					})
+
+					var manifestBuffer = new bitcoin.Buffer.Buffer(manifestHex,'hex')
+						,manifestData = msgpack.decode(manifestBuffer.buffer)
+						,list = new openpgp.packet.List()
+
+					list.read(manifestData.k)
+
+					var key = openpgp.key.Key(list)
+						,vendorData = {
+							name:manifestData.n
+							,currency:manifestData.c
+							,pgp_public:key.armor()
+							,products:[]
+							,mk_public:xpubkey
+						}
+
+					manifestData.p.forEach(function(product){
+						vendorData.products.push({
+							name:product.n
+							,price:product.p
+						})
+					})
+
+					var vendor = new Vendor(vendorData)
+					resolve(vendor)
+						
+				})
+		})
+
 
 		var manifestData = _.json64.decode(manifest.replace('<manifest>','').replace('</manifest>',''))
 			,vendorData = _.json64.decode(manifestData.data64)

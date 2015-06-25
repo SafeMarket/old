@@ -12,7 +12,6 @@ angular.module('app').controller('ManifestController',function($scope,$rootScope
 		vendorData.products = storage.get('products')
 
 		$scope.vendor = new Vendor(vendorData)
-		$scope.vendor.setMyManifest()
 	}
 
 	$scope.$on('ticker.rates',function(){

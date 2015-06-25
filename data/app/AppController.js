@@ -20,7 +20,7 @@ app.controller('AppController',function($scope,storage,$interval,blockchain){
 		$scope.page = 'order'
 	})
 
-	$scope.$on('manifest',function($event,receipt){
+	$scope.$on('vendorData',function($event,receipt){
 		$scope.page = 'vendor'
 	})
 

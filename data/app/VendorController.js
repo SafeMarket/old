@@ -1,26 +1,25 @@
 app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,growl,$rootScope){
 
-	$scope.$watch('manifest',function(manifest){
-		if(!manifest) return
+	$scope.$watch('xpubkey',function(xpubkey){
+		if(!xpubkey) return
 
-		$scope.vendor = Vendor.fromManifest(manifest)
-		growl.addSuccessMessage('Manifest loaded')
+		Vendor.getFromXpubkeyPromise(xpubkey).then(function(vendor){
+			console.log('then',vendor)
+			$scope.vendor = vendor
+		})
 		
 	})
 
-	$scope.$on('manifest',function(event,manifest){
-		$scope.manifest = manifest
+	$scope.$on('vendorData',function(event,vendorData){
+		console.log('vendorData',vendorData)
+		$scope.vendor = new Vendor(vendorData)
+	})
+
+	$scope.$on('xpubkey',function(event,xpubkey){
+		$scope.xpubkey = xpubkey
 	})
 
 	$scope.total = 0
-
-	/*
-	$scope.totals = {
-		vendor_currency:0
-		,my_currency:0
-		,btc:0
-	}
-	*/
 
 	if(self.port)
 		self.port.on('show',function onShow(options){

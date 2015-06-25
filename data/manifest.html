@@ -10,6 +10,9 @@
   </form>
   <table class="table">
     <tr>
+      <td>Xpubkey</td><td>{{vendor.data.mk_public}}</td>
+    </tr>
+    <tr>
       <td>Address</td><td>{{vendor.address}}</td>
     </tr>
     <tr>
@@ -22,8 +25,8 @@
       <td>Shortfall</td><td>{{vendor.shortfall}}</td>
     </tr>
   </table>
-  <div ng-if="vendor.manifest">
-    <pre class="pre" style="white-space:pre-wrap;">{{vendor.manifest}}</pre>
+  <div ng-if="vendor.txHexes">
+    <pre class="pre" style="white-space:pre-wrap;">for txHex in {{vendor.txHexes}}: sendrawtransaction(txHex);</pre>
     <a class="btn btn-primary" ng-click="preview()">Preview</a>
     <a class="btn btn-primary" ng-click="vendor.publish()">Publish</a>
   </div>
