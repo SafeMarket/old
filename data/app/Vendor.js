@@ -211,6 +211,9 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				.getTxsPromise(address)
 				.then(function(txs){
 					txs.forEach(function(tx){
+						if(tx.inputs[0].address!==address)
+							return true
+
 						if(tx.out.length<2) return true
 
 						var script = tx.out[0].script
