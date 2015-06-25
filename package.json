@@ -1,6 +1,6 @@
 {
-  "name": "extension",
-  "title": "trustless",
+  "name": "safemarket",
+  "title": "SafeMarket",
   "id": "jid1-646FXOj1BBAWAg",
   "description": "a basic add-on",
   "author": "",
@@ -9,6 +9,7 @@
     "private-browsing": true,
     "cross-domain-content": [
       "https://blockchain.info"
+      ,"https://bitpay.com/api/rates"
     ]
   }
 }
