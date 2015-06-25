@@ -22,7 +22,7 @@
             <select ng-model="page" class="form-control" style="margin-top:6px">
               <option value="settings">Settings</option>
               <option value="products">Products</option>
-              <option value="manifest">Manifest</option>
+              <option value="publish">Publish</option>
               <option value="vendor">Vendor</option>
               <option value="order">Order</option>
             </select>
@@ -33,7 +33,7 @@
     <div class="container">
       <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
       <div ng-show="page==='products'" ng-include="path+'products.html'"></div>
-      <div ng-show="page==='manifest'" ng-include="path+'manifest.html'"></div>
+      <div ng-show="page==='publish'" ng-include="path+'publish.html'"></div>
       <div ng-show="page==='vendor'" ng-include="path+'vendor.html'"></div>
       <div ng-show="page==='order'" ng-include="path+'order.html'"></div>
     </div>
@@ -75,6 +75,6 @@
   <script src="app/ProductsController.js"></script>
   <script src="app/VendorController.js"></script>
   <script src="app/OrderController.js"></script>
-  <script src="app/ManifestController.js"></script>
+  <script src="app/PublishController.js"></script>
 </body>
 </html>

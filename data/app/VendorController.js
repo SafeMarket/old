@@ -4,14 +4,12 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 		if(!xpubkey) return
 
 		Vendor.getFromXpubkeyPromise(xpubkey).then(function(vendor){
-			console.log('then',vendor)
 			$scope.vendor = vendor
 		})
 		
 	})
 
 	$scope.$on('vendorData',function(event,vendorData){
-		console.log('vendorData',vendorData)
 		$scope.vendor = new Vendor(vendorData)
 	})
 

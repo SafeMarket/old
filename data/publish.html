@@ -1,0 +1,52 @@
+<div ng-controller="PublishController" class="container">
+  <form ng-submit="submit()">
+    <h1>Publish</h1>
+    <div class="alert alert-danger" ng-if="!areSettingsComplete">
+      Your settings are not complete
+    </div>
+    <div class="alert alert-danger" ng-if="!areProductsComplete">
+      Your products are not set
+    </div>
+  </form>
+  <table class="table" ng-if="vendor && vendor.balance">
+    <tr>
+      <td>Xpubkey</td><td><div style="word-break: break-all;">{{vendor.data.mk_public}}</div></td>
+    </tr>
+    <tr>
+      <td>Address</td><td>{{vendor.address}}</td>
+    </tr>
+    <tr>
+      <td>Balance</td><td>
+        {{vendor.balance}} BTC,
+        {{vendor.balance | convert:'BTC':vendor.data.currency}} {{vendor.data.currency}}
+      </td>
+    </tr>
+    <tr>
+      <td>Publishing Fee</td><td>
+        {{vendor.publishingFee}} BTC,
+        {{vendor.publishingFee | convert:'BTC':vendor.data.currency}} {{vendor.data.currency}}
+        <p class="text-muted">this goes to the Bitcoin network, not SafeTrade</p>
+      </td>
+    </tr>
+    <tr ng-if="vendor.shortfall" class="text-danger">
+      <td>Shortfall</td><td>
+        {{vendor.shortfall}} BTC,
+        {{vendor.shortfall | convert:'BTC':vendor.data.currency}} {{vendor.data.currency}}
+      </td>
+    </tr>
+    <tr>
+      <td></td>
+      <td>
+        <a class="btn btn-primary" ng-click="preview()">Preview</a>
+      </td>
+    </tr>
+  </table>
+  <div ng-if="vendor.txHexes">
+    <h3>How to publish</h3>
+    <p>Open electrum and choose the "console" tab (make sure to connect via Tor if privacy is a concern). Copy and paste the contents below into the console and hit enter.</p>
+    <div class="alert alert-info">
+      It may take up to 20 minutes for your data to be fully published on the network. Do not attempt to publish multiple times within a 20 minute period.
+    </div>
+    <pre class="pre" style="white-space:pre-wrap;max-height:200px">for txHex in {{vendor.txHexes}}: sendrawtransaction(txHex);</pre>
+  </div>
+</div>

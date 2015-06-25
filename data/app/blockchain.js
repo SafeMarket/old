@@ -4,14 +4,12 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 		,isRequesting
 
 	wait = function(callback){
-		console.log('request',isRequesting)
 		if(!isRequesting){
 			isRequesting = true
 			callback()
 		}
 		else
 			var interval = $interval(function(){
-				console.log('interval',isRequesting)
 				if(isRequesting)
 					return
 
@@ -34,7 +32,6 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 			wait(function(){$http
 				.get(getHost()+'rawaddr/'+address+'?cors=true&offset='+(pageN*50))
 				.success(function(response){
-					console.log(response)
 					resolve(response)
 					isRequesting = false
 				})
@@ -52,7 +49,6 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 			var txs = []
 
 			function getTxsPagePromise(pageN){
-				console.log('pageN',pageN)
 				blockchain
 					.getAddressPromise(address,pageN)
 					.then(function(response){
@@ -72,7 +68,6 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 	}
 
 	blockchain.getUtxosPromise = function(address){
-		console.log('getUtxosPromise')
 		return $q(function(resolve,reject){
 			wait(function(){$http
 				.get(getHost()+'unspent?address='+address)
@@ -88,32 +83,28 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 	}
 
 	blockchain.getPushTxPromise = function(txHex){
-		console.log(txHex)
 
-		var data = {
-			jsonrpc:'2.0'
-			,method:'sendrawtransaction'
-			,params:[txHex]
-		}
+		return $q(function(resolve,reject){
+			wait(function(){
+				$http({
+				    method: 'POST'
+				    ,url: 'https://blockchain.info/pushtx?cors=true'
+				    ,data: $.param({tx:txHex})
+				    ,headers:{
+				        "Content-Type":"application/x-www-form-urlencoded"
+				    }
+				}).success(function(response){
+					resolve(response)
+				}).error(function(error){
+					reject(error)
+				})
 
-		$http({
-			url:'http://localhost:8332'
-			,method:'POST'
-			,data:JSON.stringify(data)
-			,headers:{
-				'Content-Type': 'application/json'
-				,'Authorization': 'Basic '+btoa('rpcuser:PVYqYx9H8PeAhBPGkDpf')
-			}
-		}).success(function(){
-			console.log('success',arguments)
-		}).error(function(){
-			console.log('error',arguments)
-		});
-		return
+			})
+		})
+
 	}
 
 	blockchain.getHeightPromise = function(txHex){
-		console.log('getHeightPromise')
 		return $q(function(resolve,reject){
 			wait(function(){$http
 				.get(getHost()+'q/getblockcount')

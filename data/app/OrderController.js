@@ -1,5 +1,6 @@
 angular.module('app').controller('OrderController',function($scope,$interval,Order,growl){
 
+
 	$scope.$watch('receipt',function(receipt){
 		$scope.order = null
 		

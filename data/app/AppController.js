@@ -1,4 +1,4 @@
-app.controller('AppController',function($scope,storage,$interval,blockchain){
+app.controller('AppController',function($rootScope,$scope,storage,$interval,blockchain){
 	$scope.page = storage.get('page')? storage.get('page') : 'settings'
 	$scope.path = self.port ? window.location.href.replace('index.html','') : '/'
 

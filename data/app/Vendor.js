@@ -31,7 +31,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		})
 
 		this.key = openpgp.key.readArmored(this.data.pgp_public)
-		console.log(this.key)
 
 	}
 
@@ -56,16 +55,10 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,k:openpgp.armor.decode(storage.get('settings').pgp_public).data
 		}
 
-		console.log(data)
-
 		var manifestArrayBuffer = msgpack.encode(data)
 			,manifestUint8Array = new Uint8Array(manifestArrayBuffer)
 			,manifestBuffer = new bitcoin.Buffer.Buffer(manifestUint8Array)
 			,manifestHex = manifestBuffer.toString('hex')
-
-		console.log(manifestArrayBuffer)
-		console.log(manifestBuffer)
-		console.log(manifestHex)
 		
 		this.manifests = manifestHex.match(/.{1,74}/g)
 
@@ -92,14 +85,14 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		 		vendor.balance = '0'
 		 		reject()
 		 	}).then(function(){
-		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifests.length+1).toString()
+		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifests.length+1).toFixed(6).toString()
 		 		
 		 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)
 				
 				if(shortfall.lessThanOrEqualTo(0))
 					vendor.shortfall = null
 				else
-					vendor.shortfall = shortfall.toString()
+					vendor.shortfall = shortfall.toFixed(6).toString()
 
 				if(shortfall.greaterThan(0)){
 					return
@@ -113,8 +106,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 					,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 					,total = 0
 					,lastTxId = null
-
-					console.log(prefixRandom)
 			    	
 			    	vendor.txHexes = []
 	    	
@@ -188,25 +179,21 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,order = new Order({
 				buyer_name:settings.name
 				,buyer_pgp_public:settings.pgp_public
-				,buyer_mk_public:_.bipPrivateToPublic(settings.mk_private)
 				,buyer_address:settings.address
 				,vendor_name:this.data.name
+				,vendor_contact:this.data.name
 				,vendor_mk_public:this.data.mk_public
 				,vendor_pgp_public:this.data.pgp_public
-				,vendor_address:this.data.address
 				,epoch:Order.getCurrentEpoch()
 				,index:Order.getRandomIndex()
 				,products:products
 				,message:message
 			})
 
-
 		return order.receiptPromise
 	}
 
 	Vendor.getFromXpubkeyPromise = function(xpubkey){
-
-		console.log(xpubkey)
 
 		var address = _.keyToAddress(xpubkey)
 			,manifests = []
@@ -214,10 +201,10 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifestHex = ''
 
 		return $q(function(resolve,reject){
+			growl.addInfoMessage('Downloading blockchain...')
 			blockchain
 				.getTxsPromise(address)
 				.then(function(txs){
-					console.log(txs)
 					txs.forEach(function(tx){
 						if(tx.out.length<2) return true
 
@@ -248,8 +235,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 						return a.index - b.index
 					})
 
-					console.log(manifests)
-
 					manifests.forEach(function(manifest){
 						manifestHex+=manifest.manifestPartHex
 					})
@@ -273,6 +258,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 						vendorData.products.push({
 							name:product.n
 							,price:product.p
+							,image_url:product.i
 						})
 					})
 

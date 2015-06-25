@@ -1,16 +1,17 @@
 var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-timeago'])
+  ,rootScope
 
 if(self.port)
   self.port.on('load',function(data){
     data = typeof data==='object'? data:{}
     localStorage.setItem('app',JSON.stringify(data))
     angular.bootstrap(document, ['app']);
+    self.port.emit('bootstrapped')
   })
 else
    window.onload = function(){
     angular.bootstrap(document, ['app']);
   }
-
 
 app.config(function(growlProvider,$provide,$httpProvider) {
     growlProvider.globalTimeToLive(5000);
@@ -20,6 +21,12 @@ app.config(function(growlProvider,$provide,$httpProvider) {
 
 
 app.run(function($rootScope,ticker){
+  if(self.port)
+    self.port.on('receipt',function(receipt){
+      $rootScope.$broadcast('receipt',receipt)
+    })
+
+
 	//force ticker to start
 })
 
@@ -219,10 +226,10 @@ validate.validators.type = function(value, options, key, attributes) {
 };
 
 validate.validators.startsWith = function(value, options, key, attributes) {
-	return _.startsWith(value,options) ? null : 'does should start with '+options
+	return _.startsWith(_.trim(value),options) ? null : 'should start with '+options
 };
 
 validate.validators.endsWith = function(value, options, key, attributes) {
-  return _.endsWith(value,options) ? null : 'does should end with '+options
+  return _.endsWith(_.trim(value),options) ? null : 'should end with '+options
 };
 

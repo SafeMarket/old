@@ -10,8 +10,5 @@
     "cross-domain-content": [
       "https://blockchain.info"
     ]
-  },
-  "dependencies": {
-    "bitcoinjs-lib": "1.5.x"
   }
 }
