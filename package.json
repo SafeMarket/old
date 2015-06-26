@@ -3,7 +3,7 @@
   "title": "SafeMarket",
   "id": "jid1-646FXOj1BBAWAg",
   "description": "a basic add-on",
-  "author": "",
+  "author": "Aakil Fernandes",
   "license": "MPL 2.0",
   "permissions": {
     "private-browsing": true,

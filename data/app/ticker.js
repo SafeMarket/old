@@ -1,4 +1,4 @@
-app.factory('ticker',function($interval,$http,$rootScope,storage){
+app.factory('ticker',function($interval,$http,$rootScope,storage,growl{
 	
 	var ticker = {
 		rates:{}
@@ -26,6 +26,9 @@ app.factory('ticker',function($interval,$http,$rootScope,storage){
 			ticker.rates = rates
 			$rootScope.$broadcast('ticker.rates',rates)
 
+		}).error(function(){
+			growl.addErrorMessage('Could not update rates data. Trying again in 30 seconds.')
+			$timeout(updateRates,30*1000)
 		})
 	}
 
