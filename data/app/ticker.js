@@ -1,4 +1,4 @@
-app.factory('ticker',function($interval,$http,$rootScope,storage,growl{
+app.factory('ticker',function($interval,$timeout,$http,$rootScope,storage,growl){
 	
 	var ticker = {
 		rates:{}
