@@ -9,8 +9,11 @@
     "private-browsing": true,
     "cross-domain-content": [
       "https://blockchain.info"
+      ,"https://blockchatvqztbll.onion"
       ,"http://blockchatvqztbll.onion"
+      ,"http://deepdot35wvmeyd5.onion/"
       ,"https://bitpay.com/api/rates"
+      ,"http://ifconfig.me/"
     ]
   }
 }

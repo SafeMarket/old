@@ -19,8 +19,8 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 	}
 
 	function getHost(){
-		if(storage.get('settings') && storage.get('settings').useOnions)
-			return 'http://blockchatvqztbll.onion/'
+		if(false && storage.get('settings') && storage.get('settings').useOnions)
+			return 'blockchatvqztbll.onion/'
 		else
 			return 'https://blockchain.info/'
 	}
