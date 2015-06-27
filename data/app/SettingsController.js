@@ -20,6 +20,7 @@ app.controller('SettingsController',function($scope,storage,$timeout,ticker,grow
 			,pgp_private:{presence:true,type:'string',startsWith:'-----BEGIN PGP PRIVATE KEY BLOCK-----',endsWith:'-----END PGP PRIVATE KEY BLOCK-----'}
 			,pgp_passphrase:{type:'string'}
 			,useOnions:{type:'boolean'}
+			,info:{type:'string'}
 		})
 
 		storage.save('settings',$scope.settings)

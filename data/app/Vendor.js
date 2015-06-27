@@ -5,6 +5,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 		var vendorConstraints = {
 			name:{presence:true,type:'string'}
+			,info:{presence:true,type:'string'}
 			,pgp_public:{presence:true,type:'string'}
 			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 			,products:{presence:true,type:'array'}
@@ -186,7 +187,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				,buyer_pgp_public:settings.pgp_public
 				,buyer_address:settings.address
 				,vendor_name:this.data.name
-				,vendor_contact:this.data.name
 				,vendor_mk_public:this.data.mk_public
 				,vendor_pgp_public:this.data.pgp_public
 				,epoch:Order.getCurrentEpoch()
