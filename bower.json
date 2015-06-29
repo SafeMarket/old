@@ -20,6 +20,7 @@
     "bitcoinjs-lib": "git://github.com/bitcoinjs/bitcoinjs-lib.git#~1.5.7",
     "utf8": "~2.0.0",
     "json-rpc.js": "~0.0.2",
-    "msgpack-js": "creationix/msgpack-js-browser#~0.1.4"
+    "msgpack-js": "creationix/msgpack-js-browser#~0.1.4",
+    "js-md5": "~1.1.0"
   }
 }

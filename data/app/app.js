@@ -37,6 +37,13 @@ app.filter('convert',function(convert){
   }
 })
 
+_.buffer = function(){
+  var args = Array.prototype.slice.call(arguments)
+    , args = [null].concat(args)
+    , Buffer = bitcoin.Buffer.Buffer
+  //http://stackoverflow.com/questions/5054926/javascript-create-instance-with-array-of-arguments
+  return (new (Buffer.bind.apply(Buffer,args)))
+}
 
 _.json64 = {
 	encode:function(object){
@@ -108,6 +115,18 @@ _.signWithWif = function(message,wif){
 
 _.ab2str=function(buf) {
   return String.fromCharCode.apply(null, new Uint8Array(buf));
+}
+
+_.intToHex = function(i){
+  if(i>255 || i<0)
+    throw 'invalid range'
+
+  var h = i.toString(16)
+
+  if(h.length===1)
+    h = '0'+h
+
+  return h
 }
 
 _.str2ab=function(str) {

@@ -47,6 +47,6 @@
     <div class="alert alert-info">
       It may take up to 20 minutes for your data to be fully published on the network. Do not attempt to publish multiple times within a 20 minute period.
     </div>
-    <pre class="pre" style="white-space:pre-wrap;max-height:200px">for txHex in {{vendor.txHexes}}: sendrawtransaction(txHex);</pre>
+    <pre class="pre" style="white-space:pre-wrap;max-height:200px">for txHex in {{vendor.txHexes.reverse()}}: sendrawtransaction(txHex);</pre>
   </div>
 </div>

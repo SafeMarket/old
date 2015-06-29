@@ -57,15 +57,42 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,c:this.data.currency
 			,p:products
 			,k:openpgp.armor.decode(storage.get('settings').pgp_public).data
+			,i:this.data.info
 		}
 
 		var manifestArrayBuffer = msgpack.encode(data)
 			,manifestUint8Array = new Uint8Array(manifestArrayBuffer)
-			,manifestBuffer = new bitcoin.Buffer.Buffer(manifestUint8Array)
+			,manifestBuffer = _.buffer(manifestUint8Array)
 			,manifestHex = manifestBuffer.toString('hex')
-		
-		this.manifests = manifestHex.match(/.{1,74}/g)
+			,manifestHexMd5 = md5(manifestHex)
 
+		var mk_private = storage.get('settings').mk_private
+			,wif = _.getWif(mk_private)
+			,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
+			,manifestHexMd5Signature = bitcoin.bitcoin.Message.sign(keyPair, manifestHexMd5)
+			,manifestHexMd5SignatureHex =  manifestHexMd5Signature.toString('hex')
+			,manifestsCount = Math.ceil((2+manifestHex.length+manifestHexMd5SignatureHex.length)/74)
+
+		console.log(manifestHexMd5Signature)
+
+		var manifestHex
+			= _.intToHex(manifestsCount)
+			+ manifestHexMd5SignatureHex
+			+ manifestHex
+
+		var manifestPrefixRandomInt = Math.round(Math.random()*255)
+			,manifestPrefixRandomHex = _.intToHex(manifestPrefixRandomInt)
+			,manifestPrefixConstantHex = '6d'
+			,manifestPrefix = manifestPrefixConstantHex+manifestPrefixRandomHex
+			,manifestHexes = manifestHex.match(/.{1,74}/g)
+			
+		
+		manifestHexes.forEach(function(manifestHex,index){
+			manifestHexes[index] = manifestPrefix+_.intToHex(index)+manifestHex
+		})
+			
+		this.manifestHexes = manifestHexes
+		console.log(manifestHexes)
 		
 	}
 
@@ -89,9 +116,9 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		 		vendor.balance = '0'
 		 		reject()
 		 	}).then(function(){
-		 		if(!vendor.manifests)
+		 		if(!vendor.manifestHexes)
 		 			return
-		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifests.length+1).toFixed(6).toString()
+		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifestHexes.length+1).toFixed(6).toString()
 		 		
 		 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)
 				
@@ -105,9 +132,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				}
 
 				var mk_private = storage.get('settings').mk_private
-					,prefixRandom = ((Math.round(Math.random()*255)).toString(16))
-					,prefixRandom = prefixRandom.length==2?prefixRandom : '0'+prefixRandom
-					,prefixManifest =  '6d'
 					,wif = _.getWif(mk_private)
 					,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 					,total = 0
@@ -115,13 +139,10 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			    	
 			    	vendor.txHexes = []
 	    	
-			    	vendor.manifests.forEach(function(manifest,index){
+			    	vendor.manifestHexes.forEach(function(manifest,index){
 
-						var prefixIndex = index.toString(16)
-							,prefixIndex = prefixIndex.length===2 ? prefixIndex : '0'+prefixIndex
-							,prefix = prefixManifest+prefixRandom+prefixIndex
-							,tx = new bitcoin.bitcoin.TransactionBuilder()
-							,data = new bitcoin.Buffer.Buffer(prefix + manifest,'hex')
+						var tx = new bitcoin.bitcoin.TransactionBuilder()
+							,data = new bitcoin.Buffer.Buffer(manifest,'hex')
 			    			,dataScript = bitcoin.bitcoin.scripts.nullDataOutput(data)
 
 			    		if(index===0)
@@ -204,6 +225,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifests = []
 			,random = null
 			,manifestHex = ''
+			,manifestsCount = null
 
 		return $q(function(resolve,reject){
 			growl.addInfoMessage('Downloading blockchain, this may take a minute...')
@@ -214,21 +236,28 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 						if(tx.inputs[0].prev_out.addr!==address)
 							return true
 
-						if(tx.out.length<2) return true
-
 						var script = tx.out[0].script
 							,buffer = new bitcoin.Buffer.Buffer(script,'hex')
 
-						if(buffer[0]!== 106)
-							return true
-						if(buffer[2]!==109)
+						if(buffer.length<5)
 							return true
 
-						if(random!== null && random !== buffer[3])
-							return true
+						var index = buffer[4]
 
-						if(random === null)
+						if(buffer[0]!== 106) //check OP_RETURN
+							return true
+						if(buffer[2]!==109) //check manifest prefix
+							return true
+						if(_.find(manifests,{index:index})) //ensure unique index
+							return true
+						if(random!== null && random !== buffer[3]) //check random prefix
+							return true
+						if(random === null) //set random prefix if not set
 							random = buffer[3]
+						if(index===0) //set manifests count
+							manifestsCount = buffer[5]
+						if(manifestsCount!== null && index>=manifestsCount)
+							return true
 
 						manifests.push({
 							script:script
@@ -237,32 +266,60 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 							,manifestPartHex:buffer.slice(5).toString('hex')
 						})
 
+						if(manifestsCount!==null && manifestsCount === manifests.length)
+							return false
+
 					})
 
 					manifests.sort(function(a,b){
 						return a.index - b.index
 					})
 
+					console.log(manifests)
+					console.log(manifestsCount)
+					console.log(manifests.length)
+					console.log(manifestHex)
+					console.log(msgHex)
+
+					if(manifests.length != manifestsCount){
+						growl.addErrorMessage('Publishing incomplete')
+						throw 'Publishing incomplete'
+					}
+
 					manifests.forEach(function(manifest){
 						manifestHex+=manifest.manifestPartHex
 					})
 
-					var manifestBuffer = new bitcoin.Buffer.Buffer(manifestHex,'hex')
-						,manifestData = msgpack.decode(manifestBuffer.buffer)
+					var msgHex = manifestHex.substr(2+130)
+						,msgHexMd5SignatureHex = manifestHex.substr(2,130)
+						,msgHexMd5Signature = _.buffer(msgHexMd5SignatureHex,'hex').toString('base64')
+						,msgHexMd5 = md5(msgHex)
+						,verification = bitcoin.bitcoin.Message.verify(address, msgHexMd5Signature, msgHexMd5)		
+
+					if(verification === true)
+						growl.addSuccessMessage('Signature verified')
+					else{
+						growl.addErrorMessage('Invalid signature')
+						throw 'invalid signature'
+					}
+
+					var msgBuffer = new bitcoin.Buffer.Buffer(msgHex,'hex')
+						,msgData = msgpack.decode(msgBuffer.buffer)
 						,list = new openpgp.packet.List()
 
-					list.read(manifestData.k)
+					list.read(msgData.k)
 
 					var key = openpgp.key.Key(list)
 						,vendorData = {
-							name:manifestData.n
-							,currency:manifestData.c
+							name:msgData.n
+							,currency:msgData.c
 							,pgp_public:key.armor()
 							,products:[]
 							,mk_public:xpubkey
+							,info:msgData.i
 						}
 
-					manifestData.p.forEach(function(product){
+					msgData.p.forEach(function(product){
 						vendorData.products.push({
 							name:product.n
 							,price:product.p
@@ -277,13 +334,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		})
 
 
-		var manifestData = _.json64.decode(manifest.replace('<manifest>','').replace('</manifest>',''))
-			,vendorData = _.json64.decode(manifestData.data64)
-			,address = _.keyToAddress(vendorData.mk_public)
-
-		check.signature(manifestData.data64,address,manifestData.signature)
-
-		return new Vendor(vendorData)
 	}
 
 	return Vendor

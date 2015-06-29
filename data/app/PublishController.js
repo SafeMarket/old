@@ -18,7 +18,7 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		updateManifest()
 	})
 
-	$scope.$on('storage.save',function(){
+	$scope.$on('storage.settings.save',function(){
 		updateManifest()
 	})
 
