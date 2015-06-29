@@ -204,6 +204,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				,buyer_pgp_public:settings.pgp_public
 				,buyer_address:settings.address
 				,vendor_name:this.data.name
+				,vendor_info:this.data.info
 				,vendor_mk_public:this.data.mk_public
 				,vendor_pgp_public:this.data.pgp_public
 				,epoch:Order.getCurrentEpoch()

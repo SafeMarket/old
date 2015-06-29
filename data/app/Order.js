@@ -9,6 +9,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			,buyer_pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
 			,buyer_address:{presence:true,type:'string'}
 			,vendor_name:{presence:true,type:'string'}
+			,vendor_info:{presence:true,type:'string'}
 			,vendor_mk_public:{presence:true,type:'string',startsWith:'xpub'}
 			,vendor_pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
 			,products:{presence:true,type:'array'}

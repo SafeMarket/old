@@ -1,5 +1,6 @@
 <div ng-controller="OrderController">
 	<h1>Order<span ng-if="order">: {{order.data.buyer_name}} -> {{order.data.vendor_name}}</span></h1>
+	<p ng-if="order">{{order.data.vendor_info}}</p>
 	<table class="table">
 	    <tr>
 	    	<td>Receipt</td>
