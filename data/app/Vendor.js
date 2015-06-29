@@ -73,8 +73,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifestHexMd5SignatureHex =  manifestHexMd5Signature.toString('hex')
 			,manifestsCount = Math.ceil((2+manifestHex.length+manifestHexMd5SignatureHex.length)/74)
 
-		console.log(manifestHexMd5Signature)
-
 		var manifestHex
 			= _.intToHex(manifestsCount)
 			+ manifestHexMd5SignatureHex
@@ -92,7 +90,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		})
 			
 		this.manifestHexes = manifestHexes
-		console.log(manifestHexes)
 		
 	}
 
@@ -161,7 +158,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 						tx.inputs.forEach(function(input,index){
 							tx.sign(index, keyPair)
 						})
-
 
 						var txHex = tx.build().toHex()
 						lastTxId = bitcoin.bitcoin.Transaction.fromHex(txHex).getId()
@@ -274,12 +270,6 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 					manifests.sort(function(a,b){
 						return a.index - b.index
 					})
-
-					console.log(manifests)
-					console.log(manifestsCount)
-					console.log(manifests.length)
-					console.log(manifestHex)
-					console.log(msgHex)
 
 					if(manifests.length != manifestsCount){
 						growl.addErrorMessage('Publishing incomplete')

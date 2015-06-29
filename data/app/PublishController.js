@@ -3,8 +3,9 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 	function updateManifest(){
 		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
 		$scope.areProductsComplete = typeof storage.get('products') === 'object' && storage.get('products').length>0
+		$scope.isInfoSet = $scope.areSettingsComplete ? !!storage.get('settings').info : false
 
-		if(!storage.get('settings') || !storage.get('products'))
+		if(!$scope.areSettingsComplete || !$scope.areProductsComplete || !$scope.isInfoSet)
 			return
 
 		var vendorData = storage.get('settings')
