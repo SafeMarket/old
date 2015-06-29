@@ -245,10 +245,12 @@ validate.validators.type = function(value, options, key, attributes) {
 };
 
 validate.validators.startsWith = function(value, options, key, attributes) {
+  if(!value) return null
 	return _.startsWith(_.trim(value),options) ? null : 'should start with '+options
 };
 
 validate.validators.endsWith = function(value, options, key, attributes) {
+  if(!value) return null
   return _.endsWith(_.trim(value),options) ? null : 'should end with '+options
 };
 

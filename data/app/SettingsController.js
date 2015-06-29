@@ -15,7 +15,7 @@ app.controller('SettingsController',function($scope,storage,$timeout,ticker,grow
 			name:{presence:true,type:'string'}
 			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 			,address:{presence:true,type:'string'}
-			,mk_private:{presence:true,type:'string',startsWith:'xprv'}
+			,mk_private:{type:'string',startsWith:'xprv'}
 			,pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
 			,pgp_private:{presence:true,type:'string',startsWith:'-----BEGIN PGP PRIVATE KEY BLOCK-----',endsWith:'-----END PGP PRIVATE KEY BLOCK-----'}
 			,pgp_passphrase:{type:'string'}
