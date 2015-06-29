@@ -1,11 +1,15 @@
 <div ng-controller="PublishController" class="container">
   <form ng-submit="submit()">
     <h1>Publish</h1>
+    <p>Only vendors need to publish.</p>
     <div class="alert alert-danger" ng-if="!areSettingsComplete">
       Your settings are not complete
     </div>
     <div class="alert alert-danger" ng-if="!isInfoSet">
       Your vendor info is not set
+    </div>
+    <div class="alert alert-danger" ng-if="!isMasterPrivateKeySet">
+      Your master private key is not set
     </div>
     <div class="alert alert-danger" ng-if="!areProductsComplete">
       Your products are not set

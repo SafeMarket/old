@@ -41,16 +41,22 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2"><h4>Vendor Settings</h4></td>
+			<td colspan="2"><h4>Vendor Settings (Optional)</h4></td>
 		</tr>
 		<tr>
-			<td>Master Private Key</td>
+			<td>Master Private Key (xprv)</td>
 			<td>
 				<input type="text" name="mk_private" class="form-control" ng-model="settings.mk_private">
+				<p>You can generate these in electrum 2.x. Make sure to use a seperate wallet.</p>
+				<p>In the console run: </p>
+				<ul>
+					<li><code>wallet.get_master_private_key('x/', gui.password_dialog())</code> if your wallet is password protected</li>
+					<li><code>wallet.get_master_private_key('x/', None)</code> if your wallet is not password protected</li>
+				</ul>
 			</td>
 		</tr>
 		<tr>
-			<td>Vending Info (Optional)</td>
+			<td>Info (where to send receipts, shipping locations, etc)</td>
 			<td>
 				<textarea type="text" name="contact" class="form-control" ng-model="settings.info"></textarea>
 			</td>
