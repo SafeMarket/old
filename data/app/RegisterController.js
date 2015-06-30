@@ -1,12 +1,10 @@
-angular.module('app').controller('PublishController',function($scope,$rootScope,storage,Vendor,ticker){
+angular.module('app').controller('RegisterController',function($scope,$rootScope,storage,Vendor,ticker){
 	
 	function updateManifest(){
 		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
-		$scope.areProductsComplete = typeof storage.get('products') === 'object' && storage.get('products').length>0
-		$scope.isInfoSet = $scope.areSettingsComplete ? !!storage.get('settings').info : false
 		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').mk_private : false
 
-		if(!$scope.areSettingsComplete || !$scope.areProductsComplete || !$scope.isInfoSet ||!$scope.isMasterPrivateKeySet){
+		if(!$scope.areSettingsComplete || !$scope.isMasterPrivateKeySet){
 			$scope.vendor = null
 			return
 		}
@@ -16,7 +14,7 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		vendorData.products = storage.get('products')
 
 		$scope.vendor = new Vendor(vendorData,true)
-		$scope.vendor.setMyPublishingTxs()
+		$scope.vendor.setMyFlags()
 	}
 
 	$scope.$on('ticker.rates',function(){

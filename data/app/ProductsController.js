@@ -11,7 +11,7 @@ app.controller('ProductsController',function($scope,storage,growl,check){
 		check.constraints({
 			products:$scope.products
 		},{
-			products:{presence:true,type:'array'}
+			products:{type:'array'}
 		})
 
 		$scope.products.forEach(function(product){

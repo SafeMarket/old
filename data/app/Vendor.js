@@ -1,7 +1,7 @@
 app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockchain){
 
 
-	function Vendor(vendorData,doSetManifests){
+	function Vendor(vendorData){
 
 		var vendorConstraints = {
 			name:{presence:true,type:'string'}
@@ -24,12 +24,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 		this.data = vendorData
 		this.address = _.keyToAddress(this.data.mk_public)
-		
-		if(doSetManifests)
-			this.setMyManifests()
-		
-		this.getUpdatePromise()
-
+				
 		this.data.products.forEach(function(product){
 			product.quantity = 0
 		})
@@ -38,9 +33,21 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 	}
 
-	Vendor.prototype.setMyManifests = function(){
+	Vendor.prototype.setMyFlags = function(){
+		console.log('setMyFlags')
+		var bip32 = new BIP32(storage.get('settings').mk_private)
+			,chainHex = _.buffer(bip32.chain_code).toString('hex')
+			,chainPrefixHex = _.buffer('c').toString('hex')
+			,keyHex = _.buffer(bip32.extended_public_key.slice(-33)).toString('hex')
+			,keyPrefixHex = _.buffer('k').toString('hex')
+		
+		this.flagHexes = [chainPrefixHex+chainHex,keyPrefixHex+keyHex]
+	}
+
+	Vendor.prototype.setMyPublishingTxs = function(){
 		
 		var products = []
+			,vendor = this
 
 		this.data.products.forEach(function(product){
 			products.push(
@@ -83,90 +90,74 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifestPrefixConstantHex = '6d'
 			,manifestPrefix = manifestPrefixConstantHex+manifestPrefixRandomHex
 			,manifestHexes = manifestHex.match(/.{1,74}/g)
+			,utxos = null
 			
 		
 		manifestHexes.forEach(function(manifestHex,index){
 			manifestHexes[index] = manifestPrefix+_.intToHex(index)+manifestHex
 		})
 			
-		this.manifestHexes = manifestHexes
+		var manifestHexes = manifestHexes
 		
-	}
+		this.publishingFee = new Decimal('0.0001').times(manifestHexes.length+1).toFixed(6).toString()
+		
+	 	blockchain.getUtxosPromise(this.address).then(function(response){
+	 		utxos = response.unspent_outputs
+				,totalSatoshi = 0
+			utxos.forEach(function(utxo) {
+			    totalSatoshi += utxo.value
+			})
+			vendor.balance = convert(totalSatoshi,{from:'satoshi',to:'BTC'})
+	 	}).then(function(){
 
-	Vendor.prototype.getUpdatePromise = function(){
-		var vendor = this
-		return $q(function(resolve,reject){
-		 	blockchain.getUtxosPromise(vendor.address).then(function(response){
-		 		vendor.utxos = response.unspent_outputs
+	 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)
+			
+			if(shortfall.lessThanOrEqualTo(0))
+				vendor.publishingShortfall = null
+			else
+				vendor.publishingShortfall = shortfall.toFixed(6).toString()
 
-				var totalSatoshi = 0
+			if(shortfall.greaterThan(0)){
+				return
+			}
 
-				vendor.utxos.forEach(function(utxo) {
-				    totalSatoshi += utxo.value
+			var mk_private = storage.get('settings').mk_private
+				,wif = _.getWif(mk_private)
+				,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
+				,total = 0
+				,lastTxId = null
+		    	
+	    	vendor.publishingTxs = []
+	
+	    	manifestHexes.forEach(function(manifest,index){
+
+				var tx = new bitcoin.bitcoin.TransactionBuilder()
+					,data = new bitcoin.Buffer.Buffer(manifest,'hex')
+	    			,dataScript = bitcoin.bitcoin.scripts.nullDataOutput(data)
+
+	    		if(index===0)
+					utxos.forEach(function(utxo) {
+					    tx.addInput(utxo.tx_hash_big_endian, utxo.tx_output_n)
+						total+=utxo.value
+					})
+				else
+					tx.addInput(lastTxId, 1)
+
+				tx.addOutput(dataScript, 0)
+
+				var change = total-(10000*(index+1))
+				tx.addOutput(vendor.address, change)
+
+				tx.inputs.forEach(function(input,index){
+					tx.sign(index, keyPair)
 				})
 
-				vendor.balance = convert(totalSatoshi,{from:'satoshi',to:'BTC'})
-
-				resolve()
-		 	},function(){
-		 		vendor.utxos = []
-		 		vendor.balance = '0'
-		 		reject()
-		 	}).then(function(){
-		 		if(!vendor.manifestHexes)
-		 			return
-		 		vendor.publishingFee = new Decimal('0.0001').times(vendor.manifestHexes.length+1).toFixed(6).toString()
-		 		
-		 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)
+				var txHex = tx.build().toHex()
+				lastTxId = bitcoin.bitcoin.Transaction.fromHex(txHex).getId()
 				
-				if(shortfall.lessThanOrEqualTo(0))
-					vendor.shortfall = null
-				else
-					vendor.shortfall = shortfall.toFixed(6).toString()
-
-				if(shortfall.greaterThan(0)){
-					return
-				}
-
-				var mk_private = storage.get('settings').mk_private
-					,wif = _.getWif(mk_private)
-					,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
-					,total = 0
-					,lastTxId = null
-			    	
-			    	vendor.txHexes = []
-	    	
-			    	vendor.manifestHexes.forEach(function(manifest,index){
-
-						var tx = new bitcoin.bitcoin.TransactionBuilder()
-							,data = new bitcoin.Buffer.Buffer(manifest,'hex')
-			    			,dataScript = bitcoin.bitcoin.scripts.nullDataOutput(data)
-
-			    		if(index===0)
-							vendor.utxos.forEach(function(utxo) {
-							    tx.addInput(utxo.tx_hash_big_endian, utxo.tx_output_n)
-								total+=utxo.value
-							})
-						else
-							tx.addInput(lastTxId, 1)
-
-						tx.addOutput(dataScript, 0)
-
-						var change = total-(10000*(index+1))
-						tx.addOutput(vendor.address, change)
-
-						tx.inputs.forEach(function(input,index){
-							tx.sign(index, keyPair)
-						})
-
-						var txHex = tx.build().toHex()
-						lastTxId = bitcoin.bitcoin.Transaction.fromHex(txHex).getId()
-						
-						vendor.txHexes.push(txHex)
-					})
-		    })
-
-	    })
+				vendor.publishingTxs.push(txHex)
+			})
+	    })	
 		
 	}
 

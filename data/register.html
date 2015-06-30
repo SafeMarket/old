@@ -1,18 +1,12 @@
-<div ng-controller="PublishController" class="container">
+<div ng-controller="RegisterController" class="container">
   <form ng-submit="submit()">
-    <h1>Publish</h1>
-    <p>Only vendors need to publish.</p>
+    <h1>Register</h1>
+    <p>Registration is an optional way to list your storefront in a marketplace. If you don't want to register, you can just hand out your <code>xpubkey</code> and buyers can access your storefront directly.</p>
     <div class="alert alert-danger" ng-if="!areSettingsComplete" ng-cloak>
       Your settings are not complete
     </div>
-    <div class="alert alert-danger" ng-if="!isInfoSet" ng-cloak>
-      Your vendor info is not set
-    </div>
     <div class="alert alert-danger" ng-if="!isMasterPrivateKeySet" ng-cloak>
       Your master private key is not set
-    </div>
-    <div class="alert alert-danger" ng-if="!areProductsComplete" ng-cloak>
-      Your products are not set
     </div>
   </form>
   <table class="table" ng-if="vendor && vendor.balance">
@@ -35,10 +29,10 @@
         <p class="text-muted">this goes to the Bitcoin network, not SafeTrade</p>
       </td>
     </tr>
-    <tr ng-if="vendor.publishingShortfall" class="text-danger">
+    <tr ng-if="vendor.shortfall" class="text-danger">
       <td>Shortfall</td><td>
-        {{vendor.publishingShortfall}} BTC,
-        {{vendor.publishingShortfall | convert:'BTC':vendor.data.currency}} {{vendor.data.currency}}
+        {{vendor.shortfall}} BTC,
+        {{vendor.shortfall | convert:'BTC':vendor.data.currency}} {{vendor.data.currency}}
       </td>
     </tr>
     <tr>
@@ -48,12 +42,12 @@
       </td>
     </tr>
   </table>
-  <div ng-if="vendor.publishingTxs">
+  <div ng-if="vendor.txHexes">
     <h3>How to publish</h3>
     <p>Open electrum and choose the "console" tab (make sure to connect via Tor if privacy is a concern). Copy and paste the contents below into the console and hit enter.</p>
     <div class="alert alert-info">
       It may take up to 20 minutes for your data to be fully published on the network. Do not attempt to publish multiple times within a 20 minute period.
     </div>
-    <pre class="pre" style="white-space:pre-wrap;max-height:200px">for txHex in {{vendor.publishingTxs.reverse()}}: sendrawtransaction(txHex);</pre>
+    <pre class="pre" style="white-space:pre-wrap;max-height:200px">for txHex in {{vendor.txHexes.reverse()}}: sendrawtransaction(txHex);</pre>
   </div>
 </div>

@@ -28,6 +28,7 @@
               <option value="settings">Settings</option>
               <option value="products">My Products</option>
               <option value="publish">Publish</option>
+              <option value="register">Register</option>
               <option value="vendor">Vendor</option>
               <option value="order">Order</option>
             </select>
@@ -39,6 +40,7 @@
       <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
       <div ng-show="page==='products'" ng-include="path+'products.html'"></div>
       <div ng-show="page==='publish'" ng-include="path+'publish.html'"></div>
+      <div ng-show="page==='register'" ng-include="path+'register.html'"></div>
       <div ng-show="page==='vendor'" ng-include="path+'vendor.html'"></div>
       <div ng-show="page==='order'" ng-include="path+'order.html'"></div>
     </div>
@@ -82,5 +84,6 @@
   <script src="app/VendorController.js"></script>
   <script src="app/OrderController.js"></script>
   <script src="app/PublishController.js"></script>
+  <script src="app/RegisterController.js"></script>
 </body>
 </html>
