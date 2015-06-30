@@ -3,9 +3,22 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 	$scope.$watch('xpubkey',function(xpubkey){
 		if(!xpubkey) return
 
+		$rootScope.isLoading = true
+
+		try{
+
 		Vendor.getFromXpubkeyPromise(xpubkey).then(function(vendor){
+			$rootScope.isLoading = false
 			$scope.vendor = vendor
+		},function(){
+			$rootScope.isLoading = false
+			growl.addErrorMessage('Something went wrong')
 		})
+
+		}catch(error){
+			$rootScope.isLoading = false
+			growl.addErrorMessage('Something went wrong')
+		}
 		
 	})
 

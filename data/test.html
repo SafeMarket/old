@@ -11,6 +11,7 @@
     .product-image{max-height: 100px;max-width: 100px}
     label{font-weight: normal;}
     pre{white-space: pre-wrap;}
+    [ng-cloak]{display: none}
   </style>
 </head>
 <body>
@@ -18,7 +19,8 @@
     <nav class="navbar navbar-inverse navbar-top">
       <div class="container">
         <div class="row">
-          <div class="col-xs-6"></div>
+          <div class="col-xs-5"></div>
+          <div class="col-xs-1"><img src="img/spinner.gif" style="margin-top:7px" ng-cloak ng-if="isLoading"></div>
           <div class="col-xs-6">
             <select ng-model="page" class="form-control" style="margin-top:6px">
               <option value="settings">Settings</option>
