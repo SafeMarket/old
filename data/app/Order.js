@@ -100,7 +100,6 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			,receiptMd5SubstringIntModulo = receiptMd5SubstringInt%Order.indexMax
 
 		this.derivationPath = ['m',1337,this.data.index,this.data.epoch,receiptMd5SubstringIntModulo].join('/')
-		console.log(this.derivationPath)
 	}
 
 	Order.prototype.setWif = function(){
