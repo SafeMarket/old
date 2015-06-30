@@ -63,7 +63,7 @@ app.controller('VendorController',function($scope,$q,$timeout,Vendor,storage,gro
 		}
 
 		$scope.vendor.getReceiptPromise($scope.message).then(function(receipt){
-			$rootScope.$broadcast('receipt',receipt)
+			$rootScope.$broadcast('receipt','<receipt>'+receipt+'</receipt>')
 		})
 	}
 

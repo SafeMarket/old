@@ -60,7 +60,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 		else
 			this.receiptPromise = $q(function(resolve,reject){
 				pgp.getEncryptPromise([orderData.buyer_pgp_public],orderDataJson).then(function(pgpMessage){
-					order.receipt = '<receipt>'+btoa(pgpMessage)+'</receipt>'
+					order.receipt = btoa(pgpMessage)
 					resolve(order.receipt)
 				}).catch(function(error){
 					reject(error)
@@ -94,7 +94,13 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 	}
 
 	Order.prototype.setDerivationPath = function(){
-		this.derivationPath = ['m',1337,this.data.index,this.data.epoch].join('/')
+		var receiptMd5 = md5(this.receipt)
+			,receiptMd5Substring = receiptMd5.substring(-10)
+			,receiptMd5SubstringInt = parseInt(receiptMd5Substring,36)
+			,receiptMd5SubstringIntModulo = receiptMd5SubstringInt%Order.indexMax
+
+		this.derivationPath = ['m',1337,this.data.index,this.data.epoch,receiptMd5SubstringIntModulo].join('/')
+		console.log(this.derivationPath)
 	}
 
 	Order.prototype.setWif = function(){
