@@ -13,7 +13,7 @@
 	  			<td>{{product.price | convert:'BTC':currency}} {{currency}} per unit</td>
 	  		</tr>
 	    </tbody>
-	    <tbody ng-if="order" class="table">
+	    <tbody ng-if="order">
 	  		<tr>
 		  		<td>Order Created</td>
 		  		<td colspan="2">{{order.data.epoch*1000 | timeAgo}}</td>
