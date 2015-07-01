@@ -4,7 +4,7 @@
 	<p ng-if="vendorDatasSyncedAt">Synced {{vendorDatasSyncedAt | timeAgo}}</p>
 	<div ng-if="vendors && vendors.length>0">
 	<div class="alert alert-danger text-center">
-		Vendors in the Marketplace have not been verified. They may not be who they claim to be.
+		Vendors may not be who they claim to be.
 	</div>
 	<table class="table">
 		<tbody ng-repeat="vendor in vendors">
