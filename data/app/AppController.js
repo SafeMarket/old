@@ -24,6 +24,10 @@ app.controller('AppController',function($rootScope,$scope,storage,$interval,bloc
 		$scope.page = 'vendor'
 	})
 
+	$scope.$on('xpubkey',function($event,receipt){
+		$scope.page = 'vendor'
+	})
+
 	function updateHeight(){
 		blockchain.getHeightPromise().then(function(height){
 			$scope.height = parseInt(height)

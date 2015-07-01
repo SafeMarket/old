@@ -1,9 +1,10 @@
-angular.module('app').service('blockchain',function($http,$q,storage,$interval){
+angular.module('app').service('blockchain',function($http,$q,storage,$interval,$rootScope){
 
 	var blockchain = {}
 		,isRequesting
 
 	wait = function(callback){
+		$rootScope.isLoading = true
 		if(!isRequesting){
 			isRequesting = true
 			callback()
@@ -13,6 +14,7 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 				if(isRequesting)
 					return
 
+				isRequesting = true
 				callback()
 				$interval.cancel(interval)
 			},1000)
@@ -34,10 +36,12 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 				.success(function(response){
 					resolve(response)
 					isRequesting = false
+					$rootScope.isLoading = false
 				})
 				.error(function(error){
 					reject(error)
 					isRequesting = false
+					$rootScope.isLoading = false
 				})
 			})})
 	}
@@ -74,10 +78,12 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 				.success(function(response){
 					resolve(response)
 					isRequesting = false
+					$rootScope.isLoading = false
 				})
 				.error(function(error){
 					reject(error)
 					isRequesting = false
+					$rootScope.isLoading = false
 				})
 			})})
 	}
@@ -95,8 +101,10 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 				    }
 				}).success(function(response){
 					resolve(response)
+					$rootScope.isLoading = false
 				}).error(function(error){
 					reject(error)
+					$rootScope.isLoading = false
 				})
 
 			})
@@ -111,9 +119,11 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval){
 				.success(function(response){
 					resolve(response)
 					isRequesting = false
+					$rootScope.isLoading = false
 				}).error(function(error){
 					reject(error)
 					isRequesting = false
+					$rootScope.isLoading = false
 				})
 			})})
 	}

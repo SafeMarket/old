@@ -1,9 +1,12 @@
 app.factory('ticker',function($interval,$timeout,$http,$rootScope,storage,growl){
 	
+	var storageRates = storage.get('rates')
+
 	var ticker = {
-		rates:{}
-		,isSet:false
+		rates:storageRates?storageRates:{}
+		,isSet:storageRates?true:false
 	}
+
 
 	updateRates()
 
@@ -23,6 +26,7 @@ app.factory('ticker',function($interval,$timeout,$http,$rootScope,storage,growl)
 
 			ticker.isSet = true
 			ticker.rates = rates
+			storage.save('rates',rates)
 			$rootScope.$broadcast('ticker.rates',rates)
 
 		}).error(function(){

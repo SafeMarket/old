@@ -1,0 +1,22 @@
+<div ng-controller="MarketplaceController">
+	<h1>Marketplace <a class="btn btn-primary" ng-click="sync()">Sync</a></h1>
+	<p ng-if="!vendorDatasSyncedAt">Not yet synced</p>
+	<p ng-if="vendorDatasSyncedAt">Synced {{vendorDatasSyncedAt | timeAgo}}</p>
+	<div class="alert alert-danger">
+		Vendors in the Marketplace have not been verified. Proceed with caution.
+	</div>
+	<table class="table">
+		<tbody ng-repeat="vendor in vendors">
+		<tr>
+			<td>{{vendor.data.name}}<br>{{vendor.data.info}}</td>
+			<td>
+				<span ng-repeat="product in vendor.data.products">
+					<img style="height:100px" ng-if="product.image_url" ng-src="{{product.image_url}}">
+				</span>
+			</td>
+			<td><a class="btn btn-primary btn-xs" ng-click="loadVendor(vendor.data.mk_public)">Load Vendor</a></td>
+		</tr>
+		</tbody>
+	</table>
+
+</div>

@@ -1,5 +1,5 @@
 var app = angular.module('app',['ui.bootstrap','angular-growl', 'yaru22.angular-timeago'])
-  ,rootScope
+  ,marketplaceAddress = '19r4NhfZkJRs3pkPN8iMVCML6Rt91VANiH'
 
 if(self.port)
   self.port.on('load',function(data){
@@ -43,6 +43,14 @@ _.buffer = function(){
     , Buffer = bitcoin.Buffer.Buffer
   //http://stackoverflow.com/questions/5054926/javascript-create-instance-with-array-of-arguments
   return (new (Buffer.bind.apply(Buffer,args)))
+}
+
+_.bufferToArray = function(buffer){
+  var a = []
+  _.range(buffer.byteLength).forEach(function(i){
+    a.push(buffer[i])
+  })
+  return a
 }
 
 _.json64 = {

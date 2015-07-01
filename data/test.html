@@ -22,15 +22,16 @@
       <div class="container">
         <div class="row">
           <div class="col-xs-5"></div>
-          <div class="col-xs-1"><img src="img/spinner.gif" style="margin-top:7px" ng-cloak ng-if="isLoading"></div>
+          <div class="col-xs-1" style="text-align:right"><img src="img/spinner.gif" style="margin-top:7px" ng-cloak ng-if="isLoading"></div>
           <div class="col-xs-6">
             <select ng-model="page" class="form-control" style="margin-top:6px">
               <option value="settings">Settings</option>
-              <option value="products">My Products</option>
-              <option value="publish">Publish</option>
-              <option value="register">Register</option>
-              <option value="vendor">Vendor</option>
+              <option value="marketplace">Marketplace</option>
+              <option value="vendor">Storefront</option>
               <option value="order">Order</option>
+              <option value="products">Vendor - Products</option>
+              <option value="publish">Vendor - Publish</option>
+              <option value="register">Vendor - Register</option>
             </select>
           </div>
         </div>
@@ -38,6 +39,7 @@
     </nav>
     <div class="container">
       <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
+      <div ng-show="page==='marketplace'" ng-include="path+'marketplace.html'"></div>
       <div ng-show="page==='products'" ng-include="path+'products.html'"></div>
       <div ng-show="page==='publish'" ng-include="path+'publish.html'"></div>
       <div ng-show="page==='register'" ng-include="path+'register.html'"></div>
@@ -85,5 +87,6 @@
   <script src="app/OrderController.js"></script>
   <script src="app/PublishController.js"></script>
   <script src="app/RegisterController.js"></script>
+  <script src="app/MarketplaceController.js"></script>
 </body>
 </html>
