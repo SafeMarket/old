@@ -10,7 +10,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 			,buyer_address:{presence:true,type:'string'}
 			,vendor_name:{presence:true,type:'string'}
 			,vendor_info:{presence:true,type:'string'}
-			,vendor_mk_public:{presence:true,type:'string',startsWith:'xpub'}
+			,vendor_xpubkey:{presence:true,type:'string',startsWith:'xpub'}
 			,vendor_pgp_public:{presence:true,type:'string',startsWith:'-----BEGIN PGP PUBLIC KEY BLOCK-----',endsWith:'-----END PGP PUBLIC KEY BLOCK-----'}
 			,products:{presence:true,type:'array'}
 			,index:{presence:true,numericality:{greaterThanOrEqualTo:0,lessThan:this.indexMax,onlyInteger:true},type:'number'}
@@ -44,11 +44,11 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 		this.setDerivationPath() 
 		this.setAddress() 
 
-		var mk_private = storage.get('settings').mk_private
-			,mk_public = _.bipPrivateToPublic(storage.get('settings').mk_private)
+		var xprivkey = storage.get('settings').xprivkey
+			,xpubkey = _.bipPrivateToPublic(storage.get('settings').xprivkey)
 
 
-		this.isMine = mk_public===this.data.vendor_mk_public
+		this.isMine = xpubkey===this.data.vendor_xpubkey
 
 		if(this.isMine)
 			this.setWif()
@@ -104,7 +104,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 	Order.prototype.setWif = function(){
 
-		var bip32 = new BIP32(storage.get('settings').mk_private)
+		var bip32 = new BIP32(storage.get('settings').xprivkey)
 			,child = bip32.derive(this.derivationPath)
 
 		this.wif = _.bipToWif(child)
@@ -230,7 +230,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 		if(!this.derivationPath)
 			throw 'Derivation path not set'
 
-		var bip32 = new BIP32(this.data.vendor_mk_public)
+		var bip32 = new BIP32(this.data.vendor_xpubkey)
 			,child = bip32.derive(this.derivationPath)
 
 		this.address = _.keyToAddress(child.extended_public_key_string())

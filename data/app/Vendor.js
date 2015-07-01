@@ -9,7 +9,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,pgp_public:{presence:true,type:'string'}
 			,currency:{presence:true,inclusion:Object.keys(ticker.rates),type:'string'}
 			,products:{presence:true,type:'array'}
-			,mk_public:{presence:true,startsWith:'xpub',type:'string'}
+			,xpubkey:{presence:true,startsWith:'xpub',type:'string'}
 		},productConstraints = {
 			name:{presence:true,type:'string'}
 			,price:{presence:true,numericality:{greaterThan:0},type:'string'}
@@ -23,7 +23,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		})
 
 		this.data = vendorData
-		this.address = _.keyToAddress(this.data.mk_public)
+		this.address = _.keyToAddress(this.data.xpubkey)
 				
 		this.data.products.forEach(function(product){
 			product.quantity = 0
@@ -34,7 +34,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 	}
 
 	Vendor.prototype.setMyFlags = function(address){
-		var bip32 = new BIP32(storage.get('settings').mk_private)
+		var bip32 = new BIP32(storage.get('settings').xprivkey)
 			,chainHex = _.buffer(bip32.chain_code).toString('hex')
 			,chainPrefixHex = _.buffer('c').toString('hex')
 			,keyHex = _.buffer(bip32.extended_public_key.slice(-33)).toString('hex')
@@ -66,8 +66,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				return
 			}
 
-			var mk_private = storage.get('settings').mk_private
-				,wif = _.getWif(mk_private)
+			var xprivkey = storage.get('settings').xprivkey
+				,wif = _.getWif(xprivkey)
 				,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 				,total = 0
 				,lastTxId = null
@@ -134,8 +134,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifestHex = manifestBuffer.toString('hex')
 			,manifestHexMd5 = md5(manifestHex)
 
-		var mk_private = storage.get('settings').mk_private
-			,wif = _.getWif(mk_private)
+		var xprivkey = storage.get('settings').xprivkey
+			,wif = _.getWif(xprivkey)
 			,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 			,manifestHexMd5Signature = bitcoin.bitcoin.Message.sign(keyPair, manifestHexMd5)
 			,manifestHexMd5SignatureHex =  manifestHexMd5Signature.toString('hex')
@@ -182,8 +182,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				return
 			}
 
-			var mk_private = storage.get('settings').mk_private
-				,wif = _.getWif(mk_private)
+			var xprivkey = storage.get('settings').xprivkey
+				,wif = _.getWif(xprivkey)
 				,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 				,total = 0
 				,lastTxId = null
@@ -257,7 +257,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				,buyer_address:settings.address
 				,vendor_name:this.data.name
 				,vendor_info:this.data.info
-				,vendor_mk_public:this.data.mk_public
+				,vendor_xpubkey:this.data.xpubkey
 				,vendor_pgp_public:this.data.pgp_public
 				,epoch:Order.getCurrentEpoch()
 				,index:Order.getRandomIndex()
@@ -358,7 +358,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 							,currency:msgData.c
 							,pgp_public:key.armor()
 							,products:[]
-							,mk_public:xpubkey
+							,xpubkey:xpubkey
 							,info:msgData.i
 						}
 
@@ -371,6 +371,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 					})
 
 					var vendor = new Vendor(vendorData)
+						vendor.xpubkey = xpubkey
+						
 					resolve(vendor)
 						
 				})

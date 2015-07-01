@@ -4,8 +4,8 @@ app.controller('MarketplaceController',function($scope,$rootScope,blockchain,Ven
 
 	$scope.vendorDatasSyncedAt = storage.get('vendorDatasSyncedAt')
 
-	$scope.$on('storage.vendorDatasSyncedAt.save',function(evenet,vendorDatasSyncedAt){
-		$scope.vendorDatasSyncedAt = vendorDatasSyncedAt
+	$scope.$on('storage.vendorDatasSyncedAt.save',function(event,data){
+		$scope.vendorDatasSyncedAt = data.vendorDatasSyncedAt
 	})
 
 	if(!vendorDatas)
@@ -13,7 +13,11 @@ app.controller('MarketplaceController',function($scope,$rootScope,blockchain,Ven
 	else{
 		$scope.vendors = []
 		vendorDatas.forEach(function(vendorData){
-			$scope.vendors.push(new Vendor(vendorData))
+			try{
+				$scope.vendors.push(new Vendor(vendorData))
+			}catch(error){
+
+			}
 		})
 	}
 
@@ -76,7 +80,7 @@ app.controller('MarketplaceController',function($scope,$rootScope,blockchain,Ven
 				Object.keys(flags).forEach(function(address){
 					var flag = flags[address]
 
-					if(!flag.chain || !flag.key || flag.mk_public)
+					if(!flag.chain || !flag.key || flag.xpubkey)
 						return
 
 					var hex = '0488B21E'+'00'+'00000000'+'00000000'+flag.chain+flag.key
