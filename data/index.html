@@ -3,7 +3,9 @@
   <title>SafeMarket</title>
   <link rel="stylesheet" href="components/bootstrap/dist/css/bootstrap.min.css"></script>
   <link rel="stylesheet" href="components/angular-growl/build/angular-growl.min.css"></script>
+  <link rel="stylesheet" href="css/slim.css"></script>
   <style>
+    body{background-image: none}
     .growl{
       top:auto;
       bottom: 0;
@@ -11,6 +13,7 @@
     .product-image{max-height: 100px;max-width: 100px}
     label{font-weight: normal;}
     pre{white-space: pre-wrap;}
+    [ng-cloak]{display: none}
   </style>
 </head>
 <body>
@@ -18,14 +21,17 @@
     <nav class="navbar navbar-inverse navbar-top">
       <div class="container">
         <div class="row">
-          <div class="col-xs-6"></div>
+          <div class="col-xs-5"></div>
+          <div class="col-xs-1" style="text-align:right"><img src="img/spinner.gif" style="margin-top:7px" ng-cloak ng-if="isLoading"></div>
           <div class="col-xs-6">
             <select ng-model="page" class="form-control" style="margin-top:6px">
               <option value="settings">Settings</option>
-              <option value="products">My Products</option>
-              <option value="publish">Publish</option>
-              <option value="vendor">Vendor</option>
+              <option value="marketplace">Marketplace</option>
+              <option value="vendor">Storefront</option>
               <option value="order">Order</option>
+              <option value="products">Vendor - Products</option>
+              <option value="publish">Vendor - Publish</option>
+              <option value="register">Vendor - Register</option>
             </select>
           </div>
         </div>
@@ -33,8 +39,10 @@
     </nav>
     <div class="container">
       <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
+      <div ng-show="page==='marketplace'" ng-include="path+'marketplace.html'"></div>
       <div ng-show="page==='products'" ng-include="path+'products.html'"></div>
       <div ng-show="page==='publish'" ng-include="path+'publish.html'"></div>
+      <div ng-show="page==='register'" ng-include="path+'register.html'"></div>
       <div ng-show="page==='vendor'" ng-include="path+'vendor.html'"></div>
       <div ng-show="page==='order'" ng-include="path+'order.html'"></div>
     </div>

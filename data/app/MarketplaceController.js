@@ -4,6 +4,10 @@ app.controller('MarketplaceController',function($scope,$rootScope,blockchain,Ven
 
 	$scope.vendorDatasSyncedAt = storage.get('vendorDatasSyncedAt')
 
+	$scope.$on('storage.vendorDatasSyncedAt.save',function(evenet,vendorDatasSyncedAt){
+		$scope.vendorDatasSyncedAt = vendorDatasSyncedAt
+	})
+
 	if(!vendorDatas)
 		$scope.vendors = []
 	else{
@@ -22,6 +26,7 @@ app.controller('MarketplaceController',function($scope,$rootScope,blockchain,Ven
 		,keyDecimal = _.buffer('K')[0]
 
 	$scope.sync = function(){
+		growl.addInfoMessage('Starting sync. This may take some time.')
 		storage.save('vendorDatas',[])
 		$scope.vendors=[]
 		blockchain
