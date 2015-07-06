@@ -4,7 +4,7 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
 		$scope.areProductsComplete = typeof storage.get('products') === 'object' && storage.get('products').length>0
 		$scope.isInfoSet = $scope.areSettingsComplete ? !!storage.get('settings').info : false
-		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').mk_private : false
+		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').xprvkey : false
 
 		if(!$scope.areSettingsComplete || !$scope.areProductsComplete || !$scope.isInfoSet ||!$scope.isMasterPrivateKeySet){
 			$scope.vendor = null
@@ -12,7 +12,7 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		}
 
 		var vendorData = storage.get('settings')
-		vendorData.mk_public = _.bipPrivateToPublic(vendorData.mk_private)
+		vendorData.xpubkey = _.bipPrivateToPublic(vendorData.xprvkey)
 		vendorData.products = storage.get('products')
 
 		$scope.vendor = new Vendor(vendorData,true)

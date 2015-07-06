@@ -2,7 +2,7 @@ angular.module('app').controller('RegisterController',function($scope,$rootScope
 	
 	function updateManifest(){
 		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
-		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').mk_private : false
+		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').xprvkey : false
 
 		if(!$scope.areSettingsComplete || !$scope.isMasterPrivateKeySet){
 			$scope.vendor = null
@@ -10,7 +10,7 @@ angular.module('app').controller('RegisterController',function($scope,$rootScope
 		}
 
 		var vendorData = storage.get('settings')
-		vendorData.mk_public = _.bipPrivateToPublic(vendorData.mk_private)
+		vendorData.xpubkey = _.bipPrivateToPublic(vendorData.xprvkey)
 		vendorData.products = storage.get('products')
 
 		$scope.vendor = new Vendor(vendorData,true)

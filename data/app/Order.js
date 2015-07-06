@@ -44,8 +44,8 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 		this.setDerivationPath() 
 		this.setAddress() 
 
-		var xprivkey = storage.get('settings').xprivkey
-			,xpubkey = _.bipPrivateToPublic(storage.get('settings').xprivkey)
+		var xprvkey = storage.get('settings').xprvkey
+			,xpubkey = _.bipPrivateToPublic(storage.get('settings').xprvkey)
 
 
 		this.isMine = xpubkey===this.data.vendor_xpubkey
@@ -104,7 +104,7 @@ angular.module('app').factory('Order',function($q,blockchain,storage,pgp,growl,c
 
 	Order.prototype.setWif = function(){
 
-		var bip32 = new BIP32(storage.get('settings').xprivkey)
+		var bip32 = new BIP32(storage.get('settings').xprvkey)
 			,child = bip32.derive(this.derivationPath)
 
 		this.wif = _.bipToWif(child)

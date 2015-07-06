@@ -1,6 +1,12 @@
 <div ng-controller="VendorController" class="container">
   <h1>Storefront <span ng-if="vendor">: {{vendor.data.name}}</span></h1>
-  <div ng-if="vendor" style="margin-bottom:20px">{{vendor.data.info}}</div>
+  <div ng-if="vendor" style="margin-bottom:20px">
+    <p>{{vendor.data.info}}</p>
+    <p>
+      <a class="btn btn-default btn-xs" ng-href="{{vendor.reviewsUrl}}" target="_blank">Reviews</a>
+      <a class="btn btn-default btn-xs" ng-href="{{vendor.reviewUrl}}" target="_blank">Leave a Review</a>
+    </p>
+  </div>
   <table class="table">
     <tr>
       <td>xpubkey</td>

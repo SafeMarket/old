@@ -17,7 +17,7 @@ app.factory('storage',function($rootScope){
 		
 		localStorage.setItem('app',JSON.stringify(data))
 		
-		$rootScope.$broadcast('storage.'+key+'.save',data[key])
+		$rootScope.$broadcast('storage.'+key+'.save',data)
 	}
 
 	storage.get = function(key){

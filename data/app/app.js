@@ -103,13 +103,13 @@ _.keyToAddress = function(key){
   return (new Bitcoin.Address(hash160)).toString()
 }
 
-_.getWif = function(mk_private){
-  var bip = new BIP32(mk_private)
+_.getWif = function(xprvkey){
+  var bip = new BIP32(xprvkey)
   return _.bipToWif(bip)
 }
 
-_.getSignature = function(message,mk_private){
-  return _.signWithWif(message,_.getWif(mk_private))
+_.getSignature = function(message,xprvkey){
+  return _.signWithWif(message,_.getWif(xprvkey))
 }
 
 _.signWithWif = function(message,wif){
@@ -159,89 +159,6 @@ _.parseBase58Check = function(address) {
   var version = hash.shift();
   return [version, hash];
 }
-
-/*
-app.directive('price', function() {
-  return {
-    require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      ctrl.$validators.price = function(modelValue, viewValue) {
-        
-        if(ctrl.$isEmpty(modelValue))
-          return true;
-
-        if(!parseFloat(modelValue)>0)
-          return false;
-
-      	return true;
-      };
-    }
-  };
-});
-
-app.directive('mkPrivate', function() {
-  return {
-    require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      ctrl.$validators.mk_private = function(modelValue, viewValue) {
-        if(ctrl.$isEmpty(modelValue)) {
-          return true;
-        }
-
-        if(!_.startsWith(viewValue,'xprv')){
-          return false;
-        }
-
-        return true;
-      };
-    }
-  };
-});
-
-app.directive('pgpPublic', function() {
-  return {
-    require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      ctrl.$validators.pgp_public = function(modelValue, viewValue) {
-
-        if(ctrl.$isEmpty(modelValue))
-          return true;
-
-        if(!_.startsWith(viewValue,'-----BEGIN PGP PUBLIC KEY BLOCK-----'))
-          return false;
-
-        if(!_.endsWith(viewValue,'-----END PGP PUBLIC KEY BLOCK-----'))
-          return false;
-
-        return true;
-      };
-    }
-  };
-});
-
-
-app.directive('pgpPrivate', function() {
-  return {
-    require: 'ngModel',
-    link: function(scope, elm, attrs, ctrl) {
-      ctrl.$validators.pgp_private = function(modelValue, viewValue) {
-        if(ctrl.$isEmpty(modelValue)) 
-          return true;
-
-        if(!_.startsWith(viewValue,'-----BEGIN PGP PRIVATE KEY BLOCK-----'))
-            return false;
-
-
-        if(!_.endsWith(viewValue,'-----END PGP PRIVATE KEY BLOCK-----'))
-          return false;
-
-        return true;
-      };
-    }
-  };
-});
-
-*/
 
 validate.validators.type = function(value, options, key, attributes) {
   if(value === null || value === undefined) return null

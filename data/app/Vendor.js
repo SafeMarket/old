@@ -24,7 +24,17 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 		this.data = vendorData
 		this.address = _.keyToAddress(this.data.xpubkey)
-				
+		this.reviewsUrl = (
+			'https://www.reddit.com/r/SafeMarketReviews/search?restrict_sr=on&q='
+			+encodeURIComponent(this.data.xpubkey)
+		)
+		this.reviewUrl = (
+			'http://www.reddit.com/r/SafeMarketReviews/submit?text='
+			+encodeURIComponent('Leave a review')
+			+'&title='
+			+encodeURIComponent(this.data.name+' ['+this.data.xpubkey+']')
+		)	
+		
 		this.data.products.forEach(function(product){
 			product.quantity = 0
 		})
@@ -34,7 +44,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 	}
 
 	Vendor.prototype.setMyFlags = function(address){
-		var bip32 = new BIP32(storage.get('settings').xprivkey)
+		var bip32 = new BIP32(storage.get('settings').xprvkey)
 			,chainHex = _.buffer(bip32.chain_code).toString('hex')
 			,chainPrefixHex = _.buffer('c').toString('hex')
 			,keyHex = _.buffer(bip32.extended_public_key.slice(-33)).toString('hex')
@@ -66,8 +76,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				return
 			}
 
-			var xprivkey = storage.get('settings').xprivkey
-				,wif = _.getWif(xprivkey)
+			var xprvkey = storage.get('settings').xprvkey
+				,wif = _.getWif(xprvkey)
 				,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 				,total = 0
 				,lastTxId = null
@@ -134,8 +144,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			,manifestHex = manifestBuffer.toString('hex')
 			,manifestHexMd5 = md5(manifestHex)
 
-		var xprivkey = storage.get('settings').xprivkey
-			,wif = _.getWif(xprivkey)
+		var xprvkey = storage.get('settings').xprvkey
+			,wif = _.getWif(xprvkey)
 			,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 			,manifestHexMd5Signature = bitcoin.bitcoin.Message.sign(keyPair, manifestHexMd5)
 			,manifestHexMd5SignatureHex =  manifestHexMd5Signature.toString('hex')
@@ -182,8 +192,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 				return
 			}
 
-			var xprivkey = storage.get('settings').xprivkey
-				,wif = _.getWif(xprivkey)
+			var xprvkey = storage.get('settings').xprvkey
+				,wif = _.getWif(xprvkey)
 				,keyPair = bitcoin.bitcoin.ECKey.fromWIF(wif)
 				,total = 0
 				,lastTxId = null
@@ -371,8 +381,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 					})
 
 					var vendor = new Vendor(vendorData)
-						vendor.xpubkey = xpubkey
-						
+
 					resolve(vendor)
 						
 				})
