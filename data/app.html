@@ -21,7 +21,7 @@
     </div>
   </nav>
   <div class="container">
-    <div class="alert alert-warning text-center" ng-if="version!==latestVersion">
+    <div class="alert alert-warning text-center" ng-cloak ng-if="version!==latestVersion">
       Version {{latestVersion}} is now available.
       <a href="https://github.com/SafeMarket/SafeMarket" target="_blank">Download here.</a>
     </div>
