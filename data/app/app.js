@@ -21,13 +21,14 @@ app.config(function(growlProvider,$provide,$httpProvider) {
 
 
 app.run(function($rootScope,ticker){
+  //force ticker to start
+
+  $rootScope.path = self.port ? window.location.href.replace('index.html','') : '/'
+ 
   if(self.port)
     self.port.on('receipt',function(receipt){
       $rootScope.$broadcast('receipt',receipt)
     })
-
-
-	//force ticker to start
 })
 
 app.filter('convert',function(convert){
