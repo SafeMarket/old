@@ -27,6 +27,11 @@ app.run(function($rootScope,ticker,$http){
 
   $http.get($rootScope.path+'version').then(function(response){
     $rootScope.version = response.data
+  
+    $http.get('https://api.github.com/repos/SafeMarket/SafeMarket/tags').then(function(response){
+      $rootScope.latestVersion = response.data[0].name
+    })
+
   })
 
  

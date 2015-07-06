@@ -21,6 +21,10 @@
     </div>
   </nav>
   <div class="container">
+    <div class="alert alert-warning text-center" ng-if="version!==latestVersion">
+      Version {{latestVersion}} is now available.
+      <a href="https://github.com/SafeMarket/SafeMarket" target="_blank">Download here.</a>
+    </div>
     <div ng-show="page==='settings'" ng-include="path+'settings.html'"></div>
     <div ng-show="page==='marketplace'" ng-include="path+'marketplace.html'"></div>
     <div ng-show="page==='products'" ng-include="path+'products.html'"></div>

@@ -9,7 +9,7 @@ git pull
 bower install
 tag="$1"
 sed "s/___VERSION___/$tag/g" package.template.json > package.json
-echo $tag > data/version
+echo -n $tag > data/version
 cfx xpi --output-file="safemarket.xpi"
 rm safemarket.xpi.asc
 gpg --detach-sign --armor safemarket.xpi
