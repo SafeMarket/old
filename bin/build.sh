@@ -10,7 +10,7 @@ bower install
 tag="$1"
 sed "s/___VERSION___/$tag/g" package.template.json > package.json
 echo $tag > data/version
-cfx xpi --output-file="builds/safemarket.xpi"
+cfx xpi --output-file="safemarket.xpi"
 sed "s/___VERSION___/$tag/g" readme.template.md > readme.md
 git add -A
 git commit -m "build $tag"
