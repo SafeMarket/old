@@ -20,10 +20,15 @@ app.config(function(growlProvider,$provide,$httpProvider) {
 });
 
 
-app.run(function($rootScope,ticker){
+app.run(function($rootScope,ticker,$http){
   //force ticker to start
 
   $rootScope.path = self.port ? window.location.href.replace('index.html','') : '/'
+
+  $http.get($rootScope.path+'version').then(function(response){
+    $rootScope.version = response.data
+  })
+
  
   if(self.port)
     self.port.on('receipt',function(receipt){

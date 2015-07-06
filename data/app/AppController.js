@@ -1,10 +1,6 @@
 app.controller('AppController',function($rootScope,$scope,storage,$interval,blockchain,$http){
 	$scope.page = storage.get('page')? storage.get('page') : 'settings'
 
-	$http.get('/version').then(function(response){
-		$rootScope.version = response.data
-	})
-
 	var settings = storage.get('settings')
 
 	$scope.currency = settings && settings.currency ? settings.currency : 'BTC'
