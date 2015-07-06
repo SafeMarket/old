@@ -1,7 +1,10 @@
-app.controller('AppController',function($rootScope,$scope,storage,$interval,blockchain){
-	$scope.version = "__VERSION__"
+app.controller('AppController',function($rootScope,$scope,storage,$interval,blockchain,$http){
 	$scope.page = storage.get('page')? storage.get('page') : 'settings'
 	$scope.path = self.port ? window.location.href.replace('index.html','') : '/'
+
+	$http.get('/version').then(function(response){
+		$rootScope.version = response.data
+	})
 
 	var settings = storage.get('settings')
 
