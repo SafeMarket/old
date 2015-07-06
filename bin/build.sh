@@ -11,7 +11,8 @@ tag="$1"
 sed "s/___VERSION___/$tag/g" package.template.json > package.json
 echo $tag > data/version
 cfx xpi --output-file="safemarket.xpi"
-yes | gpg --detach-sign --armor safemarket.xpi
+rm safemarket.xpi.asc
+gpg --detach-sign --armor safemarket.xpi
 sed "s/___VERSION___/$tag/g" readme.template.md > readme.md
 git add -A
 git commit -m "build $tag"
