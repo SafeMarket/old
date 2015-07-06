@@ -1,0 +1,15 @@
+{
+  "name": "safemarket",
+  "title": "SafeMarket",
+  "id": "jid1-646FXOj1BBAWAg",
+  "description": "Trustless, Decentralized, and Pseudonymous Marketplace",
+  "author": "Aakil Fernandes",
+  "license": "MPL 2.0",
+  "permissions": {
+    "private-browsing": true,
+    "cross-domain-content": [
+      "https://blockchain.info"
+      ,"https://bitpay.com/api/rates"
+    ]
+  },"version":"___VERSION___"
+}
