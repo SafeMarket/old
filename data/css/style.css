@@ -1,0 +1,9 @@
+body{background-image: none}
+.growl{
+  top:auto;
+  bottom: 0;
+}
+.product-image{max-height: 100px;max-width: 100px}
+label{font-weight: normal;}
+pre{white-space: pre-wrap;}
+[ng-cloak]{display: none}
