@@ -8,5 +8,5 @@ cfx xpi --output-file="builds/safemarket-$tag.xpi"
 sed "s/___VERSION___/$tag/g" readme.template.md > readme.md
 git add -A
 git commit -m "build $tag"
-git push
 git push --tags
+git push
