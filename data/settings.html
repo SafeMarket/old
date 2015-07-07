@@ -47,12 +47,12 @@
 			<td>Master Private Key (xprv)</td>
 			<td>
 				<input type="text" name="xprvkey" class="form-control" ng-model="settings.xprvkey">
-				<p>You can generate these in Electrum 2.x. Make sure to use a seperate wallet.</p>
-				<p>In the Electrum console run: </p>
+				<p>If you have Electrum 2.x installed, you can have electrum generate a master private key for you. First, create a wallet seperate from your personal transactions then go to the console tab.</p>
 				<ul>
-					<li><code>wallet.get_master_private_key('x/', gui.password_dialog())</code> if your wallet is password protected</li>
-					<li><code>wallet.get_master_private_key('x/', None)</code> if your wallet is not password protected</li>
+					<li>If your wallet is password protected, run <code>wallet.get_master_private_key('x/', gui.password_dialog())</code></li>
+					<li>If your wallet is NOT password protected, run <code>wallet.get_master_private_key('x/', None)</code></li>
 				</ul>
+				<p>Your master private key should be between quotes, starting with 'xprv'.</p>
 			</td>
 		</tr>
 		<tr>
