@@ -12,4 +12,5 @@ Click the gear icon, then "Install Add-on From File" and select the safemarket.x
 ## Verifying the Download
 
 1. [Download the PGP signature](https://github.com/SafeMarket/SafeMarket/raw/___VERSION___/safemarket.xpi.asc?raw=true)
+2. Download the PGP public key with `gpg --recv-keys $KEY_ID`. For security reasons, the key id is listed here: https://www.reddit.com/r/SafeMarket/wiki/index.
 2. Run `gpg --verify safemarket.xpi.asc safemarket.xpi` and make sure the key id is `7B1B5C52`
