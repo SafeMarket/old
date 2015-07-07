@@ -43,7 +43,7 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 
 	}
 
-	Vendor.prototype.setMyFlags = function(address){
+	Vendor.prototype.setMyRegistrationTxs = function(address){
 		var bip32 = new BIP32(storage.get('settings').xprvkey)
 			,chainHex = _.buffer(bip32.chain_code).toString('hex')
 			,chainPrefixHex = _.buffer('c').toString('hex')
@@ -57,12 +57,15 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 		this.registrationFee = (new Decimal('0.0002')).times(flagHexes.length+1).toFixed(6).toString()
 
 		blockchain.getUtxosPromise(this.address).then(function(response){
+			console.log('succ')
 	 		utxos = response.unspent_outputs
 				,totalSatoshi = 0
 			utxos.forEach(function(utxo) {
 			    totalSatoshi += utxo.value
 			})
 			vendor.balance = convert(totalSatoshi,{from:'satoshi',to:'BTC'})
+	 	},function(){
+	 		vendor.balance = '0'
 	 	}).then(function(){
 
 	 		var shortfall = new Decimal(vendor.registrationFee).minus(vendor.balance)
@@ -179,6 +182,8 @@ app.factory('Vendor',function($q,convert,ticker,storage,Order,growl,check,blockc
 			    totalSatoshi += utxo.value
 			})
 			vendor.balance = convert(totalSatoshi,{from:'satoshi',to:'BTC'})
+	 	},function(){
+	 		vendor.balance = '0'
 	 	}).then(function(){
 
 	 		var shortfall = new Decimal(vendor.publishingFee).minus(vendor.balance)

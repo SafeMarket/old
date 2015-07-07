@@ -1,15 +1,16 @@
-angular.module('app').controller('PublishController',function($scope,$rootScope,storage,Vendor,ticker){
+angular.module('app').controller('PublishController',function($scope,$rootScope,storage,Vendor,ticker,growl){
 	
-	function updateManifest(){
-		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
-		$scope.areProductsComplete = typeof storage.get('products') === 'object' && storage.get('products').length>0
-		$scope.isInfoSet = $scope.areSettingsComplete ? !!storage.get('settings').info : false
-		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').xprvkey : false
-
-		if(!$scope.areSettingsComplete || !$scope.areProductsComplete || !$scope.isInfoSet ||!$scope.isMasterPrivateKeySet){
-			$scope.vendor = null
-			return
-		}
+	function update(){
+		$scope.vendor = null
+		growl.addInfoMessage('Fetching current balance...')
+		if(typeof storage.get('settings') !== 'object')
+			throw 'Settings not complete'
+		if(typeof storage.get('products') !== 'object' || !storage.get('products').length)
+			throw 'Products not complete'
+		if(!storage.get('settings').info)
+			throw 'Vendor info not set'
+		if(!storage.get('settings').xprvkey)
+			throw 'Master private key (xprv) not set'
 
 		var vendorData = storage.get('settings')
 		vendorData.xpubkey = _.bipPrivateToPublic(vendorData.xprvkey)
@@ -19,22 +20,29 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		$scope.vendor.setMyPublishingTxs()
 	}
 
-	$scope.$on('ticker.rates',function(){
-		updateManifest()
+	$scope.$on('storage.settings.save',function(){
+		update()
 	})
 
-	$scope.$on('storage.settings.save',function(){
-		updateManifest()
+	$scope.update = function (){
+		try{
+			update()
+		}catch(error){
+			console.log(error)
+			growl.addErrorMessage(error)
+		}
+	}
+
+	if($scope.page==='publish')
+		$scope.update()
+
+	$scope.$on('page',function(event,page){
+		if(page==='publish' && !$scope.vendor) $scope.update()
 	})
-	$scope.$on('storage.products.save',function(){
-		updateManifest()
-	})
+
 
 	$scope.preview = function(){
 		$rootScope.$broadcast('vendorData',$scope.vendor.data)
 	}
 
-
-	if(ticker.isSet)
-		updateManifest()
 })

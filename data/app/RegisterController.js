@@ -1,38 +1,37 @@
 angular.module('app').controller('RegisterController',function($scope,$rootScope,storage,Vendor,ticker){
 	
-	function updateManifest(){
-		$scope.areSettingsComplete = typeof storage.get('settings') === 'object'
-		$scope.isMasterPrivateKeySet = $scope.areSettingsComplete ? !!storage.get('settings').xprvkey : false
-
-		if(!$scope.areSettingsComplete || !$scope.isMasterPrivateKeySet){
-			$scope.vendor = null
-			return
-		}
+	function update(){
+		$scope.vendor = null
+		if(typeof storage.get('settings') !== 'object')
+			throw 'Settings not complete'
+		if(!storage.get('settings').xprvkey)
+			throw 'Master private key (xprv) not set'
 
 		var vendorData = storage.get('settings')
 		vendorData.xpubkey = _.bipPrivateToPublic(vendorData.xprvkey)
 		vendorData.products = storage.get('products')
 
 		$scope.vendor = new Vendor(vendorData,true)
-		$scope.vendor.setMyFlags()
+		$scope.vendor.setMyRegistrationTxs()
 	}
-
-	$scope.$on('ticker.rates',function(){
-		updateManifest()
-	})
 
 	$scope.$on('storage.settings.save',function(){
-		updateManifest()
-	})
-	$scope.$on('storage.products.save',function(){
-		updateManifest()
+		update()
 	})
 
-	$scope.preview = function(){
-		$rootScope.$broadcast('vendorData',$scope.vendor.data)
+	$scope.update = function (){
+		try{
+			update()
+		}catch(error){
+			growl.addErrorMessage(error)
+		}
 	}
 
+	if($scope.page==='register')
+		$scope.update()
 
-	if(ticker.isSet)
-		updateManifest()
+	$scope.$on('page',function(event,page){
+		if(page==='register' && !$scope.vendor) $scope.update()
+	})
+
 })

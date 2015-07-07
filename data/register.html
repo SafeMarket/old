@@ -1,14 +1,6 @@
 <div ng-controller="RegisterController" class="container">
-  <form ng-submit="submit()">
-    <h1>Register</h1>
-    <p>Registration is an optional way to list your storefront on the marketplace. If you don't want to register, you can just hand out your <code>xpubkey</code> and buyers can access your storefront directly.</p>
-    <div class="alert alert-danger" ng-if="!areSettingsComplete" ng-cloak>
-      Your settings are not complete
-    </div>
-    <div class="alert alert-danger" ng-if="!isMasterPrivateKeySet" ng-cloak>
-      Your master private key is not set
-    </div>
-  </form>
+  <h1>Register <a class="btn btn-primary btn-xs" ng-click="update()">Update</a></h1>
+  <p>Registration is an optional way to list your storefront on the marketplace. If you don't want to register, you can just hand out your <code>xpubkey</code> and buyers can access your storefront directly.</p>
   <table class="table" ng-if="vendor && vendor.balance">
     <tr>
       <td>Address</td><td>{{vendor.address}}</td>

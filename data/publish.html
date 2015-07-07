@@ -1,20 +1,6 @@
 <div ng-controller="PublishController" class="container">
-  <form ng-submit="submit()">
-    <h1>Publish</h1>
-    <p>Only vendors need to publish.</p>
-    <div class="alert alert-danger" ng-if="!areSettingsComplete" ng-cloak>
-      Your settings are not complete
-    </div>
-    <div class="alert alert-danger" ng-if="!isInfoSet" ng-cloak>
-      Your vendor info is not set
-    </div>
-    <div class="alert alert-danger" ng-if="!isMasterPrivateKeySet" ng-cloak>
-      Your master private key is not set
-    </div>
-    <div class="alert alert-danger" ng-if="!areProductsComplete" ng-cloak>
-      Your products are not set
-    </div>
-  </form>
+  <h1>Publish <a class="btn btn-primary btn-xs" ng-click="update()">Update</a></h1>
+  <p>Only vendors need to publish.</p>
   <table class="table" ng-if="vendor && vendor.balance">
     <tr>
       <td>Xpubkey</td><td><div style="word-break: break-all;">{{vendor.data.xpubkey}}</div></td>

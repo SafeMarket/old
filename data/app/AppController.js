@@ -12,6 +12,7 @@ app.controller('AppController',function($rootScope,$scope,storage,$interval,bloc
 
 	$scope.$watch('page',function(page,pageBefore){
 		if(!page || !pageBefore || page == pageBefore) return
+		$rootScope.$broadcast('page',page)
 		storage.save('page',page)
 	})
 
