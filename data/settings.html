@@ -44,15 +44,10 @@
 			<td colspan="2"><h4>Vendor Settings (Optional)</h4></td>
 		</tr>
 		<tr>
-			<td>Master Private Key (xprv)</td>
+			<td>Master Private Key (xprv)
+			<br><a class="btn btn-primary btn-xs" ng-click="setRandomXprvkey()" style="margin-top:10px;">Randomize</a></td>
 			<td>
 				<input type="text" name="xprvkey" class="form-control" ng-model="settings.xprvkey">
-				<p>If you have Electrum 2.x installed, you can have electrum generate a master private key for you. First, create a wallet seperate from your personal transactions then go to the console tab.</p>
-				<ul>
-					<li>If your wallet is password protected, run <code>wallet.get_master_private_key('x/', gui.password_dialog())</code></li>
-					<li>If your wallet is NOT password protected, run <code>wallet.get_master_private_key('x/', None)</code></li>
-				</ul>
-				<p>Your master private key should be between quotes, starting with 'xprv'.</p>
 			</td>
 		</tr>
 		<tr>
