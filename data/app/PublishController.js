@@ -20,10 +20,6 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 		$scope.vendor.setMyPublishingTxs()
 	}
 
-	$scope.$on('storage.settings.save',function(){
-		update()
-	})
-
 	$scope.update = function (){
 		try{
 			update()
@@ -32,14 +28,6 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 			growl.addErrorMessage(error)
 		}
 	}
-
-	if($scope.page==='publish')
-		$scope.update()
-
-	$scope.$on('page',function(event,page){
-		if(page==='publish' && !$scope.vendor) $scope.update()
-	})
-
 
 	$scope.preview = function(){
 		$rootScope.$broadcast('vendorData',$scope.vendor.data)

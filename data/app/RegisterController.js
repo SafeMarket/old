@@ -15,10 +15,6 @@ angular.module('app').controller('RegisterController',function($scope,$rootScope
 		$scope.vendor.setMyRegistrationTxs()
 	}
 
-	$scope.$on('storage.settings.save',function(){
-		update()
-	})
-
 	$scope.update = function (){
 		try{
 			update()
@@ -26,12 +22,5 @@ angular.module('app').controller('RegisterController',function($scope,$rootScope
 			growl.addErrorMessage(error)
 		}
 	}
-
-	if($scope.page==='register')
-		$scope.update()
-
-	$scope.$on('page',function(event,page){
-		if(page==='register' && !$scope.vendor) $scope.update()
-	})
 
 })
