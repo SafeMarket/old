@@ -27,6 +27,23 @@ angular.module('app').service('blockchain',function($http,$q,storage,$interval,$
 			return 'https://blockchain.info/'
 	}
 
+	blockchain.getTickerPromise = function(){
+		return $q(function(resolve,reject){
+			wait(function(){$http
+				.get(getHost()+'ticker')
+				.success(function(response){
+					resolve(response)
+					isRequesting = false
+					$rootScope.isLoading = false
+				})
+				.error(function(error){
+					reject(error)
+					isRequesting = false
+					$rootScope.isLoading = false
+				})
+			})})
+	}
+
 	blockchain.getAddressPromise = function(address,pageN){
 		pageN = pageN ? pageN : 0
 
