@@ -9,6 +9,7 @@
     "private-browsing": true,
     "cross-domain-content": [
       "https://blockchain.info"
+      ,"https://api.github.com/repos/SafeMarket/SafeMarket/tags"
     ]
   },"version":"___VERSION___"
 }
