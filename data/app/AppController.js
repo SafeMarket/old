@@ -1,5 +1,5 @@
 app.controller('AppController',function($rootScope,$scope,storage,$interval,blockchain,$http){
-	$scope.page = storage.get('page')? storage.get('page') : 'settings'
+	$scope.page = storage.get('page')? storage.get('page') : 'home'
 
 	var settings = storage.get('settings')
 
