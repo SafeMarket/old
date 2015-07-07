@@ -27,12 +27,16 @@ app.controller('SettingsController',function($scope,storage,$timeout,ticker,grow
 		growl.addSuccessMessage('Settings saved')
 	}
 
-	$scope.setRandomXprvkey = function(){
-		var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-			,randomString0 = _.sample(characters, 64).join('')
-			,randomString1 = _.sample(characters, 64).join('')
-			,hasher = new jsSHA(randomString0, 'TEXT')
-        	,I = hasher.getHMAC(randomString1, "TEXT", "SHA-512", "HEX")
+	$scope.generateXprvKey = function(){
+		var pgp_private = $scope.settings.pgp_private.trim()
+
+		if(!pgp_private){
+			growl.addErrorMessage('PGP Private Key is not set')
+			return
+		}
+
+		var	hasher = new jsSHA(pgp_private, 'TEXT')
+        	,I = hasher.getHMAC(pgp_private, "TEXT", "SHA-512", "HEX")
        		,il = Crypto.util.hexToBytes(I.slice(0, 64))
         	,ir = Crypto.util.hexToBytes(I.slice(64, 128))
 			,gen_bip32 = new BIP32();
