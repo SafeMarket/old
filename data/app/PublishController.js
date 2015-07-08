@@ -18,6 +18,7 @@ angular.module('app').controller('PublishController',function($scope,$rootScope,
 
 		$scope.vendor = new Vendor(vendorData,true)
 		$scope.vendor.setMyPublishingTxs()
+		$scope.updatedAt = (new Date).getTime()
 	}
 
 	$scope.update = function (){

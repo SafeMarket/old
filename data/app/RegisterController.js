@@ -13,6 +13,7 @@ angular.module('app').controller('RegisterController',function($scope,$rootScope
 
 		$scope.vendor = new Vendor(vendorData,true)
 		$scope.vendor.setMyRegistrationTxs()
+		$scope.updatedAt = (new Date).getTime()
 	}
 
 	$scope.update = function (){
