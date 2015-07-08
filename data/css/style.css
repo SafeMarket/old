@@ -6,4 +6,4 @@ body{background-image: none}
 .product-image{max-height: 100px;max-width: 100px}
 label{font-weight: normal;}
 pre{white-space: pre-wrap;}
-[ng-cloak]{display: none}
+[ng-cloak]{display: none !important}
